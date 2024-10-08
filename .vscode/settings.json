@@ -1,0 +1,11 @@
+{
+    "files.associations": {
+        "*.cpp": "cpp",
+        "ios": "cpp",
+        "streambuf": "cpp",
+        "locale": "cpp",
+        "h": "cpp",
+        "sdl.h": "c",
+        "new": "cpp"
+    }
+}
