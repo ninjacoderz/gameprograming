@@ -13,7 +13,7 @@ To build main apps ( 1 of cmd bellow )
     gcc -o main.out main/main.c -F./build -framework SDL3 -Wl,-rpath,./build
     gcc -o main.out main.c -I../SDL/include -L../SDL/build -Wl,-rpath,../SDL/build -lSDL3
 
-    game % g++ -o main main.cpp ./src/game.cpp -I../SDL/include -I./include/headers  -L../SDL/build -Wl,-rpath,../SDL/build -lSDL3
+    g++ -o main main.cpp ./src/game.cpp -I../SDL/include -I./include/headers  -L../SDL/build -Wl,-rpath,../SDL/build -lSDL3
 To see the lib compiled with 
     otool -L main.out
 

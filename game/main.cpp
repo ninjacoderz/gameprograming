@@ -11,10 +11,10 @@
 /* We will use this renderer to draw into this window every frame. */
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
-static Game *game = NULL;
+static Game game;
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 480
+#define WINDOW_WIDTH 1024
+#define WINDOW_HEIGHT 768
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
@@ -24,12 +24,12 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         return SDL_APP_FAILURE;
     }
 
-    if (!SDL_CreateWindowAndRenderer("examples/renderer/rectangles", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer)) {
+    if (!SDL_CreateWindowAndRenderer("Ping Pong", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer)) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Couldn't create window/renderer!", SDL_GetError(), NULL);
         return SDL_APP_FAILURE;
     }
 
-    game = new Game(window, renderer);
+    game.Initialize(window, renderer);
 
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
@@ -37,7 +37,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 /* This function runs when a new event (mouse input, keypresses, etc) occurs. */
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 {   
-    game->handleEvents(event);
+    game.ProcessInput(event);
     if (event->type == SDL_EVENT_QUIT) {
         return SDL_APP_SUCCESS;  /* end the program, reporting success to the OS. */
     }
@@ -48,20 +48,19 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
 SDL_AppResult SDL_AppIterate(void *appstate)
 {
     const int FPS = 60;
-    const int frameDelay = 1000/FPS;
+    const int frameTime = 1000/FPS;
 
-    Uint32 frameStart = SDL_GetTicks();
-    game->gameLoop();
-    Uint32 frameEnd = SDL_GetTicks();
-    int frameTime = frameEnd - frameStart;
-    if(frameTime < frameDelay) SDL_Delay(frameDelay - frameTime);
+    Uint32 timeStart = SDL_GetTicks();
+    game.RunLoop();
+    Uint32 timeEnd = SDL_GetTicks();
+    int workingTime = timeEnd - timeStart;
+    if(workingTime < frameTime) SDL_Delay(frameTime - workingTime);
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
 
 /* This function runs once at shutdown. */
 void SDL_AppQuit(void *appstate, SDL_AppResult result)
 {
-    delete game;
-    game = NULL;
+    game.Shutdown();
     /* SDL will clean up the window/renderer for us. */
 }
