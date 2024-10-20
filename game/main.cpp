@@ -8,9 +8,12 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <game.h>
+#include <GL/glew.h>
 /* We will use this renderer to draw into this window every frame. */
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
+static SDL_GLContext context = NULL;
+
 static Game game;
 
 #define WINDOW_WIDTH 1024
@@ -23,13 +26,45 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Couldn't initialize SDL!", SDL_GetError(), NULL);
         return SDL_APP_FAILURE;
     }
+    
+    // Set up OpenGL Attribute
+    SDL_GL_SetAttribute(
+        SDL_GL_CONTEXT_PROFILE_MASK,
+        SDL_GL_CONTEXT_PROFILE_CORE
+    );
 
-    if (!SDL_CreateWindowAndRenderer("Ping Pong", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer)) {
+    // Specify version 3.3
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    // Request a color buffer with 8-bits per RGBA channel
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+    // Enable double buffering
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    // Force OpenGL to use hardware acceleration
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+    
+
+    if (!SDL_CreateWindowAndRenderer("Ping Pong", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL, &window, &renderer)) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Couldn't create window/renderer!", SDL_GetError(), NULL);
         return SDL_APP_FAILURE;
     }
-
-    game.Initialize(window, renderer);
+    context = SDL_GL_CreateContext(window);
+    game.Initialize(window, renderer, context);
+    
+    // Initialize GLEW
+	glewExperimental = GL_TRUE;
+	if (glewInit() != GLEW_OK)
+	{
+		SDL_Log("Failed to initialize GLEW.");
+	}
+	
+	// On some platforms, GLEW will emit a benign error code,
+	// so clear it
+	glGetError();
 
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }

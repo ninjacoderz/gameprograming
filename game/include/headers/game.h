@@ -18,7 +18,7 @@ class Game {
     public: 
         Game();
         // Initialize the game
-	    bool Initialize(SDL_Window* _window, SDL_Renderer* _renderer);
+	    bool Initialize(SDL_Window* _window, SDL_Renderer* _renderer, SDL_GLContext& context);
         // Shutdown the game
 	    void Shutdown();
         void RunLoop();
@@ -29,14 +29,6 @@ class Game {
         void GenerateOutput();
         SDL_Window* mWindow;
         SDL_Renderer* mRenderer;
-
-        // Other variable here 
-        Uint64 mTicksCount;
-        bool mIsRunning;
-        int mPaddleDir;
-        int mPaddleDirSecond;
-        int numBalls;
-        std::vector<Ball> balls;
-        Vector2 mPaddlePos;
-        Vector2 mPaddlePosSecond;
+        SDL_GLContext mContext;
+        Uint32 mTicksCount; 
 };
