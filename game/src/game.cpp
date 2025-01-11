@@ -1,26 +1,30 @@
 #include "game.h"
 #include <SDL3/SDL.h>
 
-const int thickness = 15;
-const float paddleH = 100.0f;
-
-Game::Game():mWindow(nullptr),mRenderer(nullptr)
-,mTicksCount(0)
-{
-    SDL_Log("Game Created");
+Game::Game(SDL_Window *_window,
+           SDL_Renderer *_renderer)
+{ 
+    this->Initialize( _window, _renderer );
 }
 
-bool Game::Initialize( SDL_Window* window, SDL_Renderer* renderer, SDL_GLContext& context )
+bool Game::Initialize( SDL_Window* _window,
+        SDL_Renderer* _renderer)
 {
-    if(window != NULL && renderer != NULL)
-    {    
-        this->mWindow = window;
-        this->mRenderer = renderer;
-        this->mContext = context;
-        return true;
-    } else {
-        return false;
-    }
+    this->mWindow = _window;
+    this->mRenderer = _renderer;
+
+    if (!this->mWindow)
+	{
+		SDL_Log("Failed to create window: %s", SDL_GetError());
+		return false;
+	}
+
+    if (!mRenderer)
+	{
+		SDL_Log("Failed to create renderer: %s", SDL_GetError());
+		return false;
+	}
+    return true;
 }
 
 void Game::Shutdown()
@@ -40,7 +44,7 @@ void Game::RunLoop()
 
 void Game::UpdateGame()
 {
-    SDL_Log("Game Updated");
+    // SDL_Log("Game Updated");
 	
 }
 
@@ -73,10 +77,11 @@ void Game::ProcessInput(SDL_Event *event)
         case SDL_EVENT_KEY_DOWN:
             if(event->key.scancode == SDL_SCANCODE_W){
                 // Handle Keycode 
+                SDL_Log("W Key Pressed");
             }
             break;
          case SDL_EVENT_KEY_UP:
-
+        
             break;
     }
 

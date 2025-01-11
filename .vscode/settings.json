@@ -7,5 +7,6 @@
         "h": "cpp",
         "sdl.h": "c",
         "new": "cpp"
-    }
+    },
+    "cmake.sourceDirectory": "/Users/binhnguyenthanh/Documents/GameProgramming/SDL3/SDL/src/hidapi/hidtest"
 }

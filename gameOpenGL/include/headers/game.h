@@ -16,9 +16,9 @@ struct Ball
 
 class Game {
     public: 
-        Game(SDL_Window* window, SDL_Renderer* renderer);
+        Game();
         // Initialize the game
-	    bool Initialize(SDL_Window* _window, SDL_Renderer* _renderer);
+	    bool Initialize(SDL_Window* _window, SDL_Renderer* _renderer, SDL_GLContext& context);
         // Shutdown the game
 	    void Shutdown();
         void RunLoop();
