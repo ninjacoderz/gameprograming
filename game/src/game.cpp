@@ -38,11 +38,19 @@ void Game::Shutdown()
 
 void Game::RunLoop()
 {
-    UpdateGame();
+    float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
+    if (deltaTime > 0.05f)
+    {
+        deltaTime = 0.05f;
+    }
+
+    UpdateGame(deltaTime);
     GenerateOutput();
+
+    mTicksCount = SDL_GetTicks(); 
 }
 
-void Game::UpdateGame()
+void Game::UpdateGame(float detalTime)
 {
     // SDL_Log("Game Updated");
 	

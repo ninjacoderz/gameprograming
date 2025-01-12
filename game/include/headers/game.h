@@ -13,7 +13,7 @@ class Game {
         void ProcessInput(SDL_Event *event);
 
     private:
-        void UpdateGame();
+        void UpdateGame(float detalTime);
         void GenerateOutput();
         SDL_Window* mWindow;
         SDL_Renderer* mRenderer;
