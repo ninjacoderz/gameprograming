@@ -7,6 +7,7 @@
                 "${workspaceFolder}/SDL_image/include",
                 "${workspaceFolder}/SDL_image/include",
                 "${workspaceFolder}/game/include/**",
+                "${workspaceFolder}/pingpong/include/headers/**",
                 "${workspaceFolder}/**"
             ],
             "defines": [],
