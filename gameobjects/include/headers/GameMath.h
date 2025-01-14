@@ -4,7 +4,7 @@
 #include <memory.h>
 #include <limits>
 
-namespace Math
+namespace GameMath
 {
     const float Pi = 3.1415926535f;
 	const float TwoPi = Pi * 2.0f;
@@ -13,9 +13,14 @@ namespace Math
     const float Infinity = std::numeric_limits<float>::infinity();
 	const float NegInfinity = -std::numeric_limits<float>::infinity();
 
-    inline float Sqrt(float value)
+	inline float Sqrt(float value)
 	{
-		return sqrtf(value);
+		return std::sqrtf(value);
+	}
+
+	inline float ToDegrees(float radians)
+	{
+		return radians * 180.0f / Pi;
 	}
 }
 
@@ -106,7 +111,7 @@ public:
 	// Length of vector
 	float Length() const
 	{
-		return (Math::Sqrt(LengthSq()));
+		return (GameMath::Sqrt(LengthSq()));
 	}
 
 	// Normalize this vector

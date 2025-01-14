@@ -8,7 +8,7 @@
                 "${workspaceFolder}/SDL_image/include",
                 "${workspaceFolder}/game/include/**",
                 "${workspaceFolder}/pingpong/include/headers/**",
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/gameobjects/include/headers/**"
             ],
             "defines": [],
             "macFrameworkPath": [

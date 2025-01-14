@@ -1,9 +1,12 @@
 #include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 
-#include "../include/headers/game.h"
-#include "../include/headers/Actor.h"
-
-
+#include "Game.h"
+#include "Actor.h"
+#include "SpriteComponent.h"
+#include "BGSpriteComponent.h"
+// #include <unistd.h>  
+// #include <iostream>
 
 Game::Game(SDL_Window *_window,
            SDL_Renderer *_renderer)
@@ -16,23 +19,15 @@ bool Game::Initialize( SDL_Window* _window,
 {
     this->mWindow = _window;
     this->mRenderer = _renderer;
-
-    if (!this->mWindow)
-	{
-		SDL_Log("Failed to create window: %s", SDL_GetError());
-		return false;
-	}
-
-    if (!mRenderer)
-	{
-		SDL_Log("Failed to create renderer: %s", SDL_GetError());
-		return false;
-	}
+	
+	LoadData();
+	
     return true;
 }
 
 void Game::Shutdown()
 {
+	UnloadData();
     SDL_DestroyRenderer(mRenderer);
 	SDL_DestroyWindow(mWindow);
     SDL_GL_DestroyContext(mContext);
@@ -102,8 +97,14 @@ void Game::GenerateOutput()
 	// Clear back buffer
 	SDL_RenderClear(mRenderer);
 
-	// Swap front buffer and back buffer
+	// Draw all sprite components
+	for (auto sprite : mSprites)
+	{
+		sprite->Draw(mRenderer);
+	}
+
 	SDL_RenderPresent(mRenderer);
+
 }
 
 void Game::ProcessInput(SDL_Event *event)
@@ -160,4 +161,99 @@ void Game::RemoveActor( Actor* actor )
         std::iter_swap(iter, mActors.end() - 1);
         mActors.pop_back();
     }
+}
+
+SDL_Texture* Game::GetTexture(const std::string& fileName)
+{
+	SDL_Texture* tex = nullptr;
+	// Is the texture already in the map?
+	auto iter = mTextures.find(fileName);
+	SDL_Log("Texture Name: %s", fileName.c_str());
+	if (iter != mTextures.end())
+	{
+		tex = iter->second;
+	}
+	else
+	{
+
+		// Create texture from file
+		tex = IMG_LoadTexture(mRenderer, fileName.c_str());
+
+		if (!tex)
+		{
+			SDL_Log("Failed to load image file to texture for %s", fileName.c_str());
+			return nullptr;
+		}
+
+		mTextures.emplace(fileName.c_str(), tex);
+	}
+	return tex;
+}
+
+void Game::LoadData(){
+    // Create actor for the background (this doesn't need a subclass)
+	Actor* temp = new Actor(this);
+	temp->SetPosition(Vector2(512.0f, 384.0f));
+	// Create the "far back" background
+	BGSpriteComponent* bg = new BGSpriteComponent(temp);
+	bg->SetScreenSize(Vector2(1024.0f, 768.0f));
+	std::vector<SDL_Texture*> bgtexs = {
+		GetTexture("Assets/Farback01.png"),
+		GetTexture("Assets/Farback02.png")
+	};
+	bg->SetBGTextures(bgtexs);
+	bg->SetScrollSpeed(-100.0f);
+	// Create the closer background
+	bg = new BGSpriteComponent(temp, 50);
+	bg->SetScreenSize(Vector2(1024.0f, 768.0f));
+	bgtexs = {
+		GetTexture("Assets/Stars.png"),
+		GetTexture("Assets/Stars.png")
+	};
+	bg->SetBGTextures(bgtexs);
+	bg->SetScrollSpeed(-200.0f);
+}
+
+void Game::AddSprite(SpriteComponent* sprite)
+{
+	// Find the insertion point in the sorted vector
+	// (The first element with a higher draw order than me)
+	int myDrawOrder = sprite->GetDrawOrder();
+	auto iter = mSprites.begin();
+	for ( ;
+		iter != mSprites.end();
+		++iter)
+	{
+		if (myDrawOrder < (*iter)->GetDrawOrder())
+		{
+			break;
+		}
+	}
+
+	// Inserts element before position of iterator
+	mSprites.insert(iter, sprite);
+}
+
+void Game::RemoveSprite(SpriteComponent* sprite)
+{
+	// (We can't swap because it ruins ordering)
+	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
+	mSprites.erase(iter);
+}
+
+void Game::UnloadData()
+{
+	// Delete actors
+	// Because ~Actor calls RemoveActor, have to use a different style loop
+	while (!mActors.empty())
+	{
+		delete mActors.back();
+	}
+
+	// Destroy textures
+	for (auto i : mTextures)
+	{
+		SDL_DestroyTexture(i.second);
+	}
+	mTextures.clear();
 }

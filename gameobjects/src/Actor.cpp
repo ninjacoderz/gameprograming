@@ -1,6 +1,6 @@
-#include "../include/headers/Actor.h"
-#include "../include/headers/Game.h"
-#include "../include/headers/Component.h"
+#include "Actor.h"
+#include "Game.h"
+#include "Component.h"
 
 Actor::Actor(Game* game)
     :mState(EActive)

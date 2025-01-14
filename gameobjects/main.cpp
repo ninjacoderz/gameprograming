@@ -7,28 +7,36 @@
 #define SDL_MAIN_USE_CALLBACKS 1  /* use the callbacks instead of main() */
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
-#include "include/headers/game.h"
+#include <SDL3_image/SDL_image.h>
 
-/* We will use this renderer to draw into this window every frame. */
-static SDL_Window *window = NULL;
-static SDL_Renderer *renderer = NULL;
+#include "Game.h"
 
-static Game *game;
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
+Game *game ;
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
 {
+    SDL_Window *window = NULL;
+    SDL_Renderer *renderer = NULL;
+    
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Couldn't initialize SDL!", SDL_GetError(), NULL);
         return SDL_APP_FAILURE;
     }    
     
-    if (!SDL_CreateWindowAndRenderer("A SDL First Window", WINDOW_WIDTH, WINDOW_HEIGHT, 0, &window, &renderer)) {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Couldn't create window/renderer!", SDL_GetError(), NULL);
-        return SDL_APP_FAILURE;
+    window = SDL_CreateWindow("My First SDL Window", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_MAXIMIZED);    
+    if (!window) {
+        SDL_Log("SDL_CreateWindow() failed: %s\n", SDL_GetError());
+    }
+
+    if (!renderer) {
+        renderer = SDL_CreateRenderer(window, NULL);
+    }
+    if (!renderer) {
+        SDL_Log("SDL_CreateRenderer() failed: %s\n", SDL_GetError());
     }
 
     game = new Game(window, renderer);
