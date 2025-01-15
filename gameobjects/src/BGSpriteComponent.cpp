@@ -12,9 +12,6 @@ BGSpriteComponent::BGSpriteComponent(class Actor* owner, int drawOrder)
 
 void BGSpriteComponent::Update(float deltaTime)
 {	
-
-	SDL_Log("BGSpriteComponent::Update %f", deltaTime);
-    
 	SpriteComponent::Update(deltaTime);
 	for (auto& bg : mBGTextures)
 	{

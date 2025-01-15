@@ -15,7 +15,7 @@
 
     ### macOS for universal architecture:
 
-    Run: `sudo cmake -S . -B build -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" && sudo cmake --build build && sudo cmake --install build`
+    Run: `sudo cmake -S . -B build -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" -DSDL_FRAMEWORK=OFF && sudo cmake --build build && sudo cmake --install build`
 
 # To build main apps ( 1 of cmd bellow )
     gcc -o main.out main/main.c `pkg-config sdl3 --cflags --libs`
@@ -38,3 +38,6 @@
     otool -L main.out
 
 # Use SDL_Delay(20); in SDL_AppIterate can reduce CPU usage   
+
+# Because we need to build SDL_image, then we need to make install SDL
+Modify the SDL_image build is hard, so temporary need make install SDL3 to make the things easier.
