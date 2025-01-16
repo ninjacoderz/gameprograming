@@ -10,6 +10,8 @@ add_executable(GameObjects main.cpp
                     src/Game.cpp
                     src/GameMath.cpp
                     src/SpriteComponent.cpp
+                    src/AnimSpriteComponent.cpp
+                    src/Ship.cpp
                 )
 
 target_include_directories(GameObjects PUBLIC

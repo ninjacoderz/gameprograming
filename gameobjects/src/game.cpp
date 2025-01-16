@@ -5,8 +5,8 @@
 #include "Actor.h"
 #include "SpriteComponent.h"
 #include "BGSpriteComponent.h"
-// #include <unistd.h>  
-// #include <iostream>
+#include "Ship.h"
+
 
 Game::Game(SDL_Window *_window,
            SDL_Renderer *_renderer)
@@ -51,7 +51,6 @@ void Game::RunLoop()
 
 void Game::UpdateGame(float deltaTime)
 {
-    // SDL_Log("Game Updated");
     mUpdatingActors = true;
 
     for (auto actor : mActors)
@@ -120,9 +119,9 @@ void Game::ProcessInput(SDL_Event *event)
                 // Handle Keycode 
                 SDL_Log("W Key Pressed");
             }
+			mShip->ProcessKeyboard(event->key.scancode);
             break;
          case SDL_EVENT_KEY_UP:
-        
             break;
     }
 
@@ -191,6 +190,11 @@ SDL_Texture* Game::GetTexture(const std::string& fileName)
 }
 
 void Game::LoadData(){
+	// Create player's ship
+	mShip = new Ship(this);
+	mShip->SetPosition(Vector2(100.0f, 384.0f));
+	mShip->SetScale(1.5f);
+
     // Create actor for the background (this doesn't need a subclass)
 	Actor* temp = new Actor(this);
 	temp->SetPosition(Vector2(512.0f, 384.0f));

@@ -39,5 +39,6 @@ class Game {
 
         // All the sprite components drawn
         std::vector<class SpriteComponent*> mSprites;
-
+        // Game-specific
+	    class Ship* mShip; // Player's ship
 };
