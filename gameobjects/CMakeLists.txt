@@ -3,7 +3,7 @@ project(GameObjects VERSION 1.0)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-add_executable(GameObjects main.cpp 
+add_executable(GameObjects Main.cpp 
                     src/Actor.cpp
                     src/BGSpriteComponent.cpp
                     src/Component.cpp
@@ -11,6 +11,9 @@ add_executable(GameObjects main.cpp
                     src/GameMath.cpp
                     src/SpriteComponent.cpp
                     src/AnimSpriteComponent.cpp
+                    src/MultiAnimSpriteComponent.cpp
+                    src/SpaceGame.cpp
+                    src/SpriteSheetActor.cpp
                     src/Ship.cpp
                 )
 

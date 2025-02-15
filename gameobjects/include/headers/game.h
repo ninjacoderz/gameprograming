@@ -7,9 +7,10 @@
 
 class Game {
     public: 
+        Game();
         Game(SDL_Window* window, SDL_Renderer* renderer);
         // Initialize the game
-	    bool Initialize(SDL_Window* _window, SDL_Renderer* _renderer);
+	    virtual bool Initialize(SDL_Window* _window, SDL_Renderer* _renderer);
         // Shutdown the game
 	    void Shutdown();
         void RunLoop();
@@ -19,10 +20,10 @@ class Game {
         SDL_Texture* GetTexture(const std::string& fileName);
         void AddSprite(class SpriteComponent* sprite);
         void RemoveSprite(class SpriteComponent* sprite);
-    private:
+    protected:
         void UpdateGame(float detalTime);
         void GenerateOutput();
-        void LoadData();
+        virtual void LoadData();
         void UnloadData();
 
         SDL_Window* mWindow;

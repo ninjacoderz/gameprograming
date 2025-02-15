@@ -7,10 +7,14 @@
 #include "BGSpriteComponent.h"
 #include "Ship.h"
 
+Game::Game(){
+	SDL_Log("Game no arg constructor called");
+}
 
 Game::Game(SDL_Window *_window,
            SDL_Renderer *_renderer)
 { 
+	SDL_Log("Game constructor called");
     this->Initialize( _window, _renderer );
 }
 
@@ -20,7 +24,7 @@ bool Game::Initialize( SDL_Window* _window,
     this->mWindow = _window;
     this->mRenderer = _renderer;
 	
-	LoadData();
+	this->LoadData();
 	
     return true;
 }
@@ -190,6 +194,7 @@ SDL_Texture* Game::GetTexture(const std::string& fileName)
 }
 
 void Game::LoadData(){
+	SDL_Log("Game Load");
 	// Create player's ship
 	mShip = new Ship(this);
 	mShip->SetPosition(Vector2(100.0f, 384.0f));

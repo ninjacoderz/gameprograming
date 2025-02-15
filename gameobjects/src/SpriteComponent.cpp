@@ -49,3 +49,8 @@ void SpriteComponent::Draw(SDL_Renderer* renderer)
 			SDL_FLIP_NONE);
 	}
 }
+
+SDL_Texture* SpriteComponent::getTexture()
+{
+    return mTexture;
+}

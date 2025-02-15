@@ -49,7 +49,6 @@ void Ship::ProcessKeyboard(const SDL_Scancode code )
 {
 	mRightSpeed = 0.0f;
 	mDownSpeed = 0.0f;
-    SDL_Log("Key Pressed %u", code);
 	// right/left
 	if (code == SDL_SCANCODE_D)
 	{

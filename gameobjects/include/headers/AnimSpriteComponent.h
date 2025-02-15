@@ -2,11 +2,11 @@
 #include "SpriteComponent.h"
 
 #include <vector>
-
+using namespace std;
 class AnimSpriteComponent : public SpriteComponent
 {
-private:
-    std::vector<SDL_Texture*> mAnimTextures;
+protected:
+    vector<SDL_Texture*> mAnimTextures;
     float mCurrFrame;
     float mAnimFPS;
 public:

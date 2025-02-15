@@ -41,3 +41,7 @@
 
 # Because we need to build SDL_image, then we need to make install SDL
 Modify the SDL_image build is hard, so temporary need make install SDL3 to make the things easier.
+
+# To build with cmake
+cd build
+cmake --build .
