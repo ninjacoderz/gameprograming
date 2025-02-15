@@ -3,11 +3,11 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/SDL/include",
-                "${workspaceFolder}/SDL_image/include",
-                "${workspaceFolder}/SDL_image/include",
+                "${workspaceFolder}/SDL/include/**",
+                "${workspaceFolder}/SDL_image/include/**",
                 "${workspaceFolder}/game/include/**",
                 "${workspaceFolder}/pingpong/include/headers/**",
+                "${workspaceFolder}/gameobjects/include/headers/**",
                 "${workspaceFolder}/gameobjects/include/headers/**"
             ],
             "defines": [],

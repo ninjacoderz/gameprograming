@@ -91,5 +91,6 @@
         "thread": "cpp",
         "sdl_main.h": "c"
     },
-    "cmake.sourceDirectory": "/Users/binhnguyenthanh/Documents/GameProgramming/SDL3/SDL/src/hidapi/hidtest"
+    "cmake.sourceDirectory": "/Users/binhnguyenthanh/Documents/GameProgramming/SDL3/SDL/src/hidapi/hidtest",
+    "makefile.makefilePath": ""
 }
