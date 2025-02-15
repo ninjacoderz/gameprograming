@@ -9,12 +9,12 @@
 #include <SDL3/SDL_main.h>
 #include <SDL3_image/SDL_image.h>
 
-#include "SpaceGame.h"
+#include "Game.h"
 
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
-SpaceGame *game ;
+Game *game ;
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
@@ -39,7 +39,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         SDL_Log("SDL_CreateRenderer() failed: %s\n", SDL_GetError());
     }
 
-    game = new SpaceGame(window, renderer);
+    game = new Game(window, renderer);
 
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }

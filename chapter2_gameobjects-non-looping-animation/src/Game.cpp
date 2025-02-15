@@ -5,7 +5,8 @@
 #include "Actor.h"
 #include "SpriteComponent.h"
 #include "BGSpriteComponent.h"
-#include "Ship.h"
+// #include "Ship.h"
+#include "Player.h"
 
 Game::Game(){
 	SDL_Log("Game no arg constructor called");
@@ -123,7 +124,7 @@ void Game::ProcessInput(SDL_Event *event)
                 // Handle Keycode 
                 SDL_Log("W Key Pressed");
             }
-			mShip->ProcessKeyboard(event->key.scancode);
+			mPlayer->ProcessKeyboard(event->key.scancode);
             break;
          case SDL_EVENT_KEY_UP:
             break;
@@ -194,11 +195,14 @@ SDL_Texture* Game::GetTexture(const std::string& fileName)
 }
 
 void Game::LoadData(){
-	SDL_Log("Game Load");
 	// Create player's ship
-	mShip = new Ship(this);
-	mShip->SetPosition(Vector2(100.0f, 384.0f));
-	mShip->SetScale(1.5f);
+	// mPlayer = new Ship(this);
+	// mPlayer->SetPosition(Vector2(100.0f, 384.0f));
+	// mPlayer->SetScale(1.5f);
+
+	mPlayer = new Player(this);
+	mPlayer->SetPosition(Vector2(300.0f, 384.0f));
+	mPlayer->SetScale(1);
 
     // Create actor for the background (this doesn't need a subclass)
 	Actor* temp = new Actor(this);

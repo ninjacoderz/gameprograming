@@ -34,12 +34,11 @@ class Game {
         bool mUpdatingActors;
         std::vector<class Actor*> mPendingActors;
         std::vector<class Actor*> mActors;
-
         // Map of textures loaded
 	    std::unordered_map<std::string, SDL_Texture*> mTextures;
-
         // All the sprite components drawn
         std::vector<class SpriteComponent*> mSprites;
         // Game-specific
-	    class Ship* mShip; // Player's ship
+	    // class Ship* mShip; // Player's ship
+        class Player* mPlayer; // Player's ship
 };

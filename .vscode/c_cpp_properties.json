@@ -7,8 +7,7 @@
                 "${workspaceFolder}/SDL_image/include/**",
                 "${workspaceFolder}/game/include/**",
                 "${workspaceFolder}/pingpong/include/headers/**",
-                "${workspaceFolder}/gameobjects/include/headers/**",
-                "${workspaceFolder}/gameobjects/include/headers/**"
+                "${workspaceFolder}/chapter2_gameobjects-non-looping-animation/include/headers/**"
             ],
             "defines": [],
             "macFrameworkPath": [
