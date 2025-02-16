@@ -12,8 +12,9 @@ add_executable(GameObjects Main.cpp
                     src/SpriteComponent.cpp
                     src/AnimSpriteComponent.cpp
                     src/MultiAnimSpriteComponent.cpp
-                    src/SpaceGame.cpp
+                    src/TileMapGame.cpp
                     src/SpriteSheetActor.cpp
+                    src/TileMapComponent.cpp
                     src/Ship.cpp
                 )
 

@@ -1,12 +1,12 @@
-
+#pragma once
 #include <string>
 #include "Game.h"
 #include "SpriteSheetActor.h"
 
-class SpaceGame: public Game
+class TileMapGame: public Game
 {
     public: 
-        SpaceGame(SDL_Window* window, SDL_Renderer* renderer);
+        TileMapGame(SDL_Window* window, SDL_Renderer* renderer);
         void LoadData() override;
         void UnloadData(); 
         void ProcessInput(SDL_Event *event);
@@ -14,4 +14,5 @@ class SpaceGame: public Game
         
     private: 
         SpriteSheetActor* player;
+        Actor* tileActor;
 };

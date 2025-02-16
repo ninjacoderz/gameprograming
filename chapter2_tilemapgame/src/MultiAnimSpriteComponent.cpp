@@ -78,13 +78,6 @@ void MultiAnimSpriteComponent::getCurrAnimSrcRect(SDL_FRect &rect) {
 	rect.y = frameHeight * ((currAnim.startIndex + static_cast<int>(mCurrFrame)) / framesPerRow);
 	rect.w = frameWidth;
 	rect.h = frameHeight;
-
-	std::cout << "X: " << rect.x <<
-	std::endl << "Y: " << rect.y <<
-	std::endl << "W: " << rect.w <<
-	std::endl << "H: " << rect.h << std::endl;
-
-	std::cout << static_cast<int>(mCurrFrame) << std::endl;
 }
 
 void MultiAnimSpriteComponent::startIdleState() {

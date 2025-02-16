@@ -89,7 +89,10 @@
         "semaphore": "cpp",
         "stop_token": "cpp",
         "thread": "cpp",
-        "sdl_main.h": "c"
+        "sdl_main.h": "c",
+        "list": "cpp",
+        "__memory": "cpp",
+        "filesystem": "cpp"
     },
     "cmake.sourceDirectory": "/Users/binhnguyenthanh/Documents/GameProgramming/SDL3/SDL/src/hidapi/hidtest",
     "makefile.makefilePath": "",
