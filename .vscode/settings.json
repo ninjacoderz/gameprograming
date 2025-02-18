@@ -92,9 +92,14 @@
         "sdl_main.h": "c",
         "list": "cpp",
         "__memory": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "__tree": "cpp",
+        "forward_list": "cpp",
+        "map": "cpp",
+        "set": "cpp",
+        "unordered_set": "cpp"
     },
     "cmake.sourceDirectory": "/Users/binhnguyenthanh/Documents/GameProgramming/SDL3/SDL/src/hidapi/hidtest",
     "makefile.makefilePath": "",
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "enabled"
 }

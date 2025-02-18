@@ -5,10 +5,16 @@
             "includePath": [
                 "${workspaceFolder}/SDL/include/**",
                 "${workspaceFolder}/SDL_image/include/**",
-                "${workspaceFolder}/game/include/**",
-                "${workspaceFolder}/pingpong/include/headers/**",
-                "${workspaceFolder}/chapter2_gameobjects-non-looping-animation/include/headers/**"
+                "${workspaceFolder}/chapter3_asteroids_game/include/headers"
             ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/SDL/**",
+                    "${workspaceFolder}/SDL_image/**",
+                    "${workspaceFolder}/chapter3_asteroids_game/**"
+                ],
+                "limitSymbolsToIncludedHeaders": true
+            },
             "defines": [],
             "macFrameworkPath": [
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
