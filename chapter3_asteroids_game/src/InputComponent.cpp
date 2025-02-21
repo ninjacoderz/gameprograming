@@ -1,42 +1,30 @@
 #include "InputComponent.h"
 #include "Actor.h"
 
-InputComponent::InputComponent(class Actor* owner, float mass)
-:MoveComponent(owner, mass)
-,mForwardKey(0)
-,mBackKey(0)
-,mClockwiseKey(0)
-,mCounterClockwiseKey(0)
+InputComponent::InputComponent(class Actor* owner)
+:MoveComponent(owner)
 {
 	
 }
 
 void InputComponent::ProcessInput(const SDL_Scancode code)
 {
-	// Calculate forward speed for MoveComponent
-
-    float forwardSpeed = 0.0f;
-    if (code == mForwardKey)
-    {
-        forwardSpeed += mMaxForwardSpeed;
+	Vector2 force = Vector2::Zero;
+    if(code == mForwardKey){
+        force = Vector2(GameMath::Cos(mOwner->GetRotation()),-GameMath::Sin(mOwner->GetRotation())) * mAcceleration;
     }
-    if (code== mBackKey)
-    {
-        forwardSpeed -= mMaxForwardSpeed;
+    if(code == mBackKey){
+        force = Vector2::Zero - Vector2(GameMath::Cos(mOwner->GetRotation()),-GameMath::Sin(mOwner->GetRotation())) * mAcceleration;
     }
+    AddForce(force);
 
-    SetForwardSpeed(forwardSpeed);
-
-	// Calculate angular speed for MoveComponent
 	float angularSpeed = 0.0f;
-	if (code == mClockwiseKey)
-	{
-		angularSpeed += mMaxAngularSpeed;
-	}
-	if (code == mCounterClockwiseKey)
-	{
-		angularSpeed -= mMaxAngularSpeed;
-	}
-	SetAngularSpeed(angularSpeed);
+    if(code == mClockwiseKey){
+        angularSpeed -= mMaxAngularSpeed;
+    }
+    if(code == mCounterClockwiseKey){
+        angularSpeed += mMaxAngularSpeed;
+    }
+    SetAngularSpeed(angularSpeed);
 	
 }

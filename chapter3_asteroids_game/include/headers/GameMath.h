@@ -81,6 +81,13 @@ public:
 		return Vector2(a.x - b.x, a.y - b.y);
 	}
 
+	friend Vector2 operator / (const Vector2& v, float scalar)
+    {
+        if (scalar == 0) {
+			return Vector2(0,0);
+		}
+		return Vector2(v.x / scalar, v.y / scalar);
+    }
 	// Component-wise multiplication
 	// (a.x * b.x, ...)
 	friend Vector2 operator*(const Vector2& a, const Vector2& b)
