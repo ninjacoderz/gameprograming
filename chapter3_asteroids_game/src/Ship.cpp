@@ -3,22 +3,24 @@
 #include "Game.h"
 #include "InputComponent.h"
 #include "GameMath.h"
+#include "CircleComponent.h"
+#include "Laser.h"
+#include "Asteroid.h"
 
 Ship::Ship(Game* game)
 	:Actor(game)
 	,mRightSpeed(0.0f)
 	,mDownSpeed(0.0f)
+	,mRespawnTime(1.5f)
+	,mRespawn(false)
+	,isMoving(false)
 {
 	// Create an animated sprite component
-	SpriteComponent* spriteComponent = new SpriteComponent(this, 150);
-	// std::vector<SDL_Texture*> anims = {
-	// 	game->GetTexture("Assets/Ship.png"),
-		// game->GetTexture("Assets/Ship01.png"),
-		// game->GetTexture("Assets/Ship02.png"),
-		// game->GetTexture("Assets/Ship03.png"),
-		// game->GetTexture("Assets/Ship04.png"),
-	// };
-	spriteComponent->SetTexture(game->GetTexture("Assets/Ship.png"));
+	mAnimSprite = new AnimSpriteComponent(this);
+    std::vector<SDL_Texture*> idle = {game->GetTexture("Assets/Ship.png")};
+    std::vector<SDL_Texture*> move = {game->GetTexture("Assets/ShipWithThrust.png")};
+    mAnimSprite->SetAnimTextures(IDLE,idle);
+    mAnimSprite->SetAnimTextures(MOVE,move);
 
 	// Create an input component and set keys/speed
 	inputComp = new InputComponent(this);
@@ -31,55 +33,51 @@ Ship::Ship(Game* game)
 	inputComp->SetBackKey(SDL_SCANCODE_S);
 	inputComp->SetClockwiseKey(SDL_SCANCODE_A);
 	inputComp->SetCounterClockwiseKey(SDL_SCANCODE_D);
+
+	mCircle = new CircleComponent(this);
+    mCircle->SetRadius(20.0f);
 }
 
 void Ship::UpdateActor(float deltaTime)
 {   
-	// Actor::UpdateActor(deltaTime);
-	// // Update position based on speeds and delta time
-	// Vector2 pos = GetPosition();
-	// pos.x += mRightSpeed * deltaTime;
-	// pos.y += mDownSpeed * deltaTime;
-	// // Restrict position to left half of screen
-	// if (pos.x < 25.0f)
-	// {
-	// 	pos.x = 25.0f;
-	// }
-	// else if (pos.x > 500.0f)
-	// {
-	// 	pos.x = 500.0f;
-	// }
-	// if (pos.y < 25.0f)
-	// {
-	// 	pos.y = 25.0f;
-	// }
-	// else if (pos.y > 743.0f)
-	// {
-	// 	pos.y = 743.0f;
-	// }
-	// SetPosition(pos);
+	Actor::UpdateActor(deltaTime);
+    if(!mRespawn) {
+        for (auto ast : GetGame()->GetAsteroids()) {
+            if (Intersect(*mCircle, *(ast->GetCircle()))) {
+                SetScale(0.0f);
+                mRespawn = true;
+            }
+        }
+        if (isMoving) {
+            mAnimSprite->SetCurrAnim(MOVE);
+        } else {
+            mAnimSprite->SetCurrAnim(IDLE);
+        }
+    }
+    else{
+        mRespawnTime -= deltaTime;
+        if(mRespawnTime <= 0) {
+            SetScale(1.0f);
+            inputComp->SetVelocity(Vector2::Zero);
+            SetPosition(Vector2(1024.0f / 2.0f, 768.0f / 2.0f));
+            SetRotation(0.0f);
+            mRespawnTime = 1.5f;
+            mRespawn = false;
+        }
+    }
+    mLaserCooldown -= deltaTime;
 }
 
-void Ship::ProcessKeyboard(const SDL_Scancode code )
+void Ship::ActorInput(const SDL_Scancode code )
 {
-	// mRightSpeed = 0.0f;
-	// mDownSpeed = 0.0f;
-	// // right/left
-	// if (code == SDL_SCANCODE_D)
-	// {
-	// 	mRightSpeed += 250.0f;
-	// }
-	// if (code == SDL_SCANCODE_A)
-	// {
-	// 	mRightSpeed -= 250.0f;
-	// }
-	// // up/down
-	// if (code == SDL_SCANCODE_S)
-	// {
-	// 	mDownSpeed += 300.0f;
-	// }
-	// if (code == SDL_SCANCODE_W)
-	// {
-	// 	mDownSpeed -= 300.0f;
-	// }
+	if(code == SDL_SCANCODE_SPACE && mLaserCooldown <= 0 && !mRespawn){
+        new Laser(GetGame(),GetPosition(),GetRotation());
+        mLaserCooldown = 0.5f;
+    }
+    if(code == SDL_SCANCODE_W || code == SDL_SCANCODE_S  || code == SDL_SCANCODE_A || code == SDL_SCANCODE_D){
+        isMoving = true;
+    }
+    else{
+        isMoving = false;
+    }
 }

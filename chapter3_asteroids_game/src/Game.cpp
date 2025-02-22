@@ -229,7 +229,8 @@ void Game::LoadData(){
 
     const int numAsteroids = 20;
 	for (int i = 0; i< numAsteroids; i++){
-		new Asteroid(this);
+		Asteroid* ast = new Asteroid(this);
+		mAsteroids.emplace_back(ast);
 	}
 }
 

@@ -21,6 +21,7 @@ class Game {
         void AddSprite(class SpriteComponent* sprite);
         void RemoveSprite(class SpriteComponent* sprite);
         void RemoveAsteroid(class Asteroid* ast);
+        std::vector<Asteroid*>& GetAsteroids() { return mAsteroids; }
     protected:
         void UpdateGame(float detalTime);
         void GenerateOutput();

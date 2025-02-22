@@ -18,6 +18,8 @@ add_executable(GameObjects Main.cpp
                     src/Random.cpp
                     src/Asteroid.cpp
                     src/InputComponent.cpp
+                    src/Laser.cpp
+                    src/CircleComponent.cpp
                 )
 
 target_include_directories(GameObjects PUBLIC
