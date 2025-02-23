@@ -34,6 +34,7 @@ void Game::Shutdown()
 	UnloadData();
     SDL_DestroyRenderer(mRenderer);
 	SDL_DestroyWindow(mWindow);
+    SDL_GL_DestroyContext(mContext);
     SDL_Log("Game Shutdown");
 	SDL_Quit();
 }
@@ -122,7 +123,7 @@ void Game::ProcessInput(SDL_Event *event)
                 // Handle Keycode 
                 SDL_Log("W Key Pressed");
             }
-			// Call Actor Inout here
+			mShip->ProcessKeyboard(event->key.scancode);
             break;
          case SDL_EVENT_KEY_UP:
             break;
@@ -195,6 +196,9 @@ SDL_Texture* Game::GetTexture(const std::string& fileName)
 void Game::LoadData(){
 	SDL_Log("Game Load");
 	// Create player's ship
+	mShip = new Ship(this);
+	mShip->SetPosition(Vector2(100.0f, 384.0f));
+	mShip->SetScale(1.5f);
 
     // Create actor for the background (this doesn't need a subclass)
 	Actor* temp = new Actor(this);
