@@ -5,13 +5,13 @@
             "includePath": [
                 "${workspaceFolder}/SDL/include/**",
                 "${workspaceFolder}/SDL_image/include/**",
-                "${workspaceFolder}/chapter3_asteroids_game/include/headers"
+                "${workspaceFolder}/chapter4_ai_in_games/include/headers/**"
             ],
             "browse": {
                 "path": [
                     "${workspaceFolder}/SDL/**",
                     "${workspaceFolder}/SDL_image/**",
-                    "${workspaceFolder}/chapter3_asteroids_game/**"
+                    "${workspaceFolder}/chapter4_ai_in_games/**"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             },

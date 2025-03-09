@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
-
+#include "GameMath.h"
 class Game {
     public: 
         Game();
@@ -20,6 +20,10 @@ class Game {
         SDL_Texture* GetTexture(const std::string& fileName);
         void AddSprite(class SpriteComponent* sprite);
         void RemoveSprite(class SpriteComponent* sprite);
+        std::vector<class Enemy*>& GetEnemies() { return mEnemies; }
+        class Grid* GetGrid() { return mGrid; }
+        class Enemy* GetNearestEnemy(const Vector2& pos);
+
     protected:
         void UpdateGame(float detalTime);
         void GenerateOutput();
@@ -39,5 +43,9 @@ class Game {
 
         // All the sprite components drawn
         std::vector<class SpriteComponent*> mSprites;
+        std::vector<class Enemy*> mEnemies;
+
+        class Grid* mGrid;
+	    float mNextEnemy;
 
 };

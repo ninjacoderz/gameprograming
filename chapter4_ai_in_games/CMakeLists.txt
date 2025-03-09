@@ -11,6 +11,17 @@ add_executable(GameObjects Main.cpp
                     src/GameMath.cpp
                     src/SpriteComponent.cpp
                     src/AnimSpriteComponent.cpp
+                    src/NavComponent.cpp
+                    src/MoveComponent.cpp
+                    src/Search.cpp
+                    src/AIState.cpp
+                    src/AIComponent.cpp
+                    src/Enemy.cpp
+                    src/CircleComponent.cpp
+                    src/Grid.cpp
+                    src/Tile.cpp
+                    src/Tower.cpp
+                    src/Bullet.cpp
                 )
 
 target_include_directories(GameObjects PUBLIC

@@ -34,7 +34,7 @@ class Actor
         // Add/remove components
         void AddComponent(class Component* component);
         void RemoveComponent(class Component* component);
-        
+        Vector2 GetForward() const { return Vector2(GameMath::Cos(mRotation), -GameMath::Sin(mRotation)); }
     private:
         State mState;
         // Transform

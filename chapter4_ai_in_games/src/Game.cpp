@@ -6,6 +6,8 @@
 #include "SpriteComponent.h"
 #include "BGSpriteComponent.h"
 #include "Ship.h"
+#include "Enemy.h"
+#include "Grid.h"
 
 Game::Game(){
 	SDL_Log("Game no arg constructor called");
@@ -26,6 +28,7 @@ bool Game::Initialize( SDL_Window* _window,
 	
 	this->LoadData();
 	
+	mTicksCount = SDL_GetTicks();
     return true;
 }
 
@@ -34,7 +37,6 @@ void Game::Shutdown()
 	UnloadData();
     SDL_DestroyRenderer(mRenderer);
 	SDL_DestroyWindow(mWindow);
-    SDL_GL_DestroyContext(mContext);
     SDL_Log("Game Shutdown");
 	SDL_Quit();
 }
@@ -123,10 +125,23 @@ void Game::ProcessInput(SDL_Event *event)
                 // Handle Keycode 
                 SDL_Log("W Key Pressed");
             }
-			mShip->ProcessKeyboard(event->key.scancode);
+			// Actor Input...
+			if (event->key.scancode == SDL_SCANCODE_B)
+			{
+				SDL_Log("B Key Pressed");
+				mGrid->BuildTower();
+			}
             break;
-         case SDL_EVENT_KEY_UP:
+		case SDL_EVENT_KEY_UP:
             break;
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			float x, y;
+			Uint32 buttons = SDL_GetMouseState(&x, &y);
+			if (SDL_BUTTON_MASK(buttons) & SDL_BUTTON_LEFT)
+			{
+				mGrid->ProcessClick(x, y);
+			}
+			break;
     }
 
     
@@ -195,32 +210,11 @@ SDL_Texture* Game::GetTexture(const std::string& fileName)
 
 void Game::LoadData(){
 	SDL_Log("Game Load");
-	// Create player's ship
-	mShip = new Ship(this);
-	mShip->SetPosition(Vector2(100.0f, 384.0f));
-	mShip->SetScale(1.5f);
+	mGrid = new Grid(this);
 
-    // Create actor for the background (this doesn't need a subclass)
-	Actor* temp = new Actor(this);
-	temp->SetPosition(Vector2(512.0f, 384.0f));
-	// Create the "far back" background
-	BGSpriteComponent* bg = new BGSpriteComponent(temp);
-	bg->SetScreenSize(Vector2(1024.0f, 768.0f));
-	std::vector<SDL_Texture*> bgtexs = {
-		GetTexture("Assets/Farback01.png"),
-		GetTexture("Assets/Farback02.png")
-	};
-	bg->SetBGTextures(bgtexs);
-	bg->SetScrollSpeed(-100.0f);
-	// Create the closer background
-	bg = new BGSpriteComponent(temp, 50);
-	bg->SetScreenSize(Vector2(1024.0f, 768.0f));
-	bgtexs = {
-		GetTexture("Assets/Stars.png"),
-		GetTexture("Assets/Stars.png")
-	};
-	bg->SetBGTextures(bgtexs);
-	bg->SetScrollSpeed(-200.0f);
+	// Enemy* enemy = new Enemy(this);
+
+	// enemy->SetPosition(Vector2(100, 100));
 }
 
 void Game::AddSprite(SpriteComponent* sprite)
@@ -265,4 +259,27 @@ void Game::UnloadData()
 		SDL_DestroyTexture(i.second);
 	}
 	mTextures.clear();
+}
+
+Enemy* Game::GetNearestEnemy(const Vector2& pos)
+{
+	Enemy* best = nullptr;
+	
+	if (mEnemies.size() > 0)
+	{
+		best = mEnemies[0];
+		// Save the distance squared of first enemy, and test if others are closer
+		float bestDistSq = (pos - mEnemies[0]->GetPosition()).LengthSq();
+		for (size_t i = 1; i < mEnemies.size(); i++)
+		{
+			float newDistSq = (pos - mEnemies[i]->GetPosition()).LengthSq();
+			if (newDistSq < bestDistSq)
+			{
+				bestDistSq = newDistSq;
+				best = mEnemies[i];
+			}
+		}
+	}
+	
+	return best;
 }
