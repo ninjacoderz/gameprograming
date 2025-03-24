@@ -138,9 +138,16 @@ void Game::ProcessInput(SDL_Event *event)
         case SDL_EVENT_KEY_DOWN:
             if(event->key.scancode == SDL_SCANCODE_W){
                 // Handle Keycode 
-                SDL_Log("W Key Pressed");
+                SDL_Log("W Key Pressed %d", event->key.scancode);
             }
-			// Call Actor Inout here
+			SDL_Log("W Key Pressed %d", event->key.scancode);
+			// Call Actor Input 
+			mUpdatingActors = true;
+			for (auto actor : mActors)
+			{
+				actor->ProcessInput(event->key.scancode);
+			}
+			mUpdatingActors = false;
             break;
          case SDL_EVENT_KEY_UP:
             break;
@@ -184,8 +191,13 @@ void Game::RemoveActor( Actor* actor )
 }
 
 void Game::LoadData(){
+
+	// Create player's ship
+	Ship* ship = new Ship(this);
+	ship->SetPosition(Vector2(0.0f, 0.0f));
+
 	// Create asteroids
-	const int numAsteroids = 1;
+	const int numAsteroids = 10;
 	for (int i = 0; i < numAsteroids; i++)
 	{
 		new Asteroid(this);
@@ -222,15 +234,13 @@ void Game::RemoveSprite(class SpriteComponent* sprite)
 bool Game::LoadShaders()
 {
     mSpriteShader = new Shader();
-    if(!mSpriteShader->Load("Shaders/Transform.vert", "Shaders/Basic.frag")) {
+    if(!mSpriteShader->Load("Shaders/Sprite.vert", "Shaders/Sprite.frag")) {
         return false;
     }
 
 	mSpriteShader->SetActive();
-	
+
     Matrix4 viewProj = Matrix4::CreateSimpleViewProj(1024.0f, 768.0f);
-	
-	// viewProj  = Matrix4::Identity;
 
     mSpriteShader->SetMatrixUniform("uViewProj", viewProj);
     

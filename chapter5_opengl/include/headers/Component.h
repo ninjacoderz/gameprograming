@@ -1,4 +1,6 @@
 #pragma once
+
+#include <SDL3/SDL.h>
 class Component
 {
 public:
@@ -12,6 +14,7 @@ public:
 
 	int GetUpdateOrder() const { return mUpdateOrder; }
 	virtual void OnUpdateWorldTransform(){}
+	virtual void ProcessInput(const SDL_Scancode code ) {}
 
 protected:
 	// Owning actor

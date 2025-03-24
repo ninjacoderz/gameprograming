@@ -62,6 +62,20 @@ void Actor::AddComponent(Component* component)
 	mComponents.insert(iter, component);
 }
 
+
+void Actor::ProcessInput(const SDL_Scancode code)
+{
+	if (mState == EActive)
+	{
+		// First process input for components
+		for (auto comp : mComponents)
+		{
+			comp->ProcessInput(code);
+		}
+		ActorInput(code);
+	}
+}
+
 void Actor::RemoveComponent(Component* component)
 {
 	auto iter = std::find(mComponents.begin(), mComponents.end(), component);

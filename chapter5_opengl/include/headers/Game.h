@@ -26,6 +26,7 @@ class Game {
         void RemoveAsteroid(class Asteroid* ast);
         class Texture* GetTexture(const std::string& fileName);
         bool LoadShaders();
+        std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
         
     protected:
         void UpdateGame(float detalTime);

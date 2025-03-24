@@ -2,7 +2,7 @@
 #pragma once
 #include "GameMath.h"
 #include <vector>
-
+#include <SDL3/SDL.h>
 class Actor
 {
     public:
@@ -16,10 +16,10 @@ class Actor
         virtual ~Actor();
 
         // Update function called from Game (not overridable)
-        void Update(float deltaTime);
+        virtual void Update(float deltaTime);
         void UpdateComponents(float deltaTime);
-        virtual void ActorInput(const uint8_t* keyState){};
-
+        void ProcessInput(const SDL_Scancode code);
+        virtual void ActorInput(const SDL_Scancode keyState) {};
         // Getters/setters
         const Vector2& GetPosition() const { return mPosition; }
         class Game* GetGame() { return mGame; }
