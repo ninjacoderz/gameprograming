@@ -30,10 +30,9 @@ void Ship::Update(float deltaTime)
 void Ship::ActorInput(const SDL_Scancode code)
 {  
     // Need refactor because we draw and update the ship in the same function
-    SDL_Log("Space Key Pressed %d", code);
+
     if (code == SDL_SCANCODE_SPACE && mLaserCooldown <= 0.0f)
 	{
-        SDL_Log("Space Key Pressed");
 		// Create a laser and set its position/rotation to mine
 		Laser* laser = new Laser(GetGame());
 		laser->SetPosition(GetPosition());
