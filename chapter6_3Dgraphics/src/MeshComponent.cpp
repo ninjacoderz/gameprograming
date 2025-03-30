@@ -29,7 +29,7 @@ void MeshComponent::Draw(Shader* shader)
 		shader->SetMatrixUniform("uWorldTransform", 
 			mOwner->GetWorldTransform());
 		// Set specular power
-		// shader->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
+		shader->SetFloatUniform("uSpecPower", mMesh->GetSpecPower());
 		// Set the active texture
 		Texture* t = mMesh->GetTexture(mTextureIndex);
 		if (t)

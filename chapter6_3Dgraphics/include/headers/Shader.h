@@ -25,7 +25,8 @@ public:
 	void SetMatrixUniform(const char* name, const Matrix4& matrix);
 	// Sets a float uniform
 	void SetFloatUniform(const char* name, float value);
-private:
+	// Sets a Vector3 uniform
+	void SetVectorUniform(const char* name, const Vector3& vector);
 	// Tries to compile the specified shader
 	bool CompileShader(const std::string& fileName,
 					   GLenum shaderType,

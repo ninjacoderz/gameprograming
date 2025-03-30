@@ -5,14 +5,12 @@
 #include "Texture.h"
 #include "Mesh.h"
 #include "Shader.h"
-#include "SpriteComponent.h"
 #include "VertexArray.h"
 #include "MeshComponent.h"
 #include <algorithm>
 
 Renderer::Renderer(Game *game)
     :mGame(game)
-    ,mSpriteShader(nullptr)
     ,mMeshShader(nullptr)
 {
     SDL_Log("Renderer initialized");
@@ -69,9 +67,6 @@ bool Renderer::Initialize(float screenWidth, float screenHeight)
         return false;
     }
 
-    // Create quad for drawing sprites
-	CreateSpriteVerts();
-
     return true;
 }
 
@@ -93,32 +88,10 @@ void Renderer::UnloadData()
     }
     mMeshes.clear();
 }
-void Renderer::AddSprite(SpriteComponent* sprite)
-{
-    // Find the insertion point in the sorted vector
-    auto iter = std::lower_bound(mSprites.begin(), mSprites.end(), sprite,
-        [](const SpriteComponent* a, const SpriteComponent* b)
-        {
-            return a->GetDrawOrder() < b->GetDrawOrder();
-        });
-    mSprites.insert(iter, sprite);
-}
-
-void Renderer::RemoveSprite(SpriteComponent* sprite)
-{
-    auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
-    if (iter != mSprites.end())
-    {
-        std::iter_swap(iter, mSprites.end() - 1);
-        mSprites.pop_back();
-    }
-}
 
 void Renderer::Shutdown()
 {
     delete mSpriteVerts;
-    mSpriteShader->Unload();
-    delete mSpriteShader;
     mMeshShader->Unload();
     delete mMeshShader;
     SDL_GL_DestroyContext(mContext);
@@ -128,7 +101,7 @@ void Renderer::Shutdown()
 void Renderer::Draw()
 {
 	// Set the clear color to light grey
-	glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	// Clear the color buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -136,36 +109,32 @@ void Renderer::Draw()
 	// Enable depth buffering/disable alpha blend
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
-	// Set the mesh shader active
-	mSpriteShader->SetActive();
-	// Update view-projection matrix
-	mSpriteShader->SetMatrixUniform("uViewProj", mView * mProjection);
 	// Update lighting uniforms
-	// SetLightUniforms(mMeshShader);
+	SetLightUniforms(mMeshShader);
 	for (auto mc : mMeshComps)
 	{
-		mc->Draw(mSpriteShader);
+		mc->Draw(mMeshShader);
 	}
-
-	// Draw all sprite components
-	// Disable depth buffering
-	glDisable(GL_DEPTH_TEST);
-	// Enable alpha blending on the color buffer
-	glEnable(GL_BLEND);
-	glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
-	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-
-	// Set shader/vao as active
-	mSpriteVerts->SetActive();
-	for (auto sprite : mSprites)
-	{
-		sprite->Draw(mSpriteShader);
-	}
-
 	// Swap the buffers
 	SDL_GL_SwapWindow(mWindow);
 }
 
+void Renderer::SetLightUniforms(Shader* shader)
+{
+    Matrix4 invView = mView;
+    invView.Invert();
+    // Set the ambient light
+    shader->SetVectorUniform("uCameraPos", invView.GetTranslation());
+    // Set the directional light
+    shader->SetVectorUniform("uAmbientLight", mAmbientLight);
+    // Directional light
+	shader->SetVectorUniform("uDirLight.mDirection",
+		mDirLight.mDirection);
+	shader->SetVectorUniform("uDirLight.mDiffuseColor",
+		mDirLight.mDiffuseColor);
+	shader->SetVectorUniform("uDirLight.mSpecColor",
+		mDirLight.mSpecColor);
+}
 void Renderer::AddMeshComp(MeshComponent* mesh)
 {
     mMeshComps.emplace_back(mesh);
@@ -203,52 +172,20 @@ Texture* Renderer::GetTexture(const std::string& fileName)
 
 bool Renderer::LoadShaders()
 {
-	// Create sprite shader
-	mSpriteShader = new Shader();
-	if (!mSpriteShader->Load("Shaders/Sprite.vert", "Shaders/Sprite.frag"))
+	// Create basic mesh shader
+	mMeshShader = new Shader();
+	if (!mMeshShader->Load("Shaders/Phong.vert", "Shaders/Phong.frag"))
 	{
 		return false;
 	}
-
-	mSpriteShader->SetActive();
+	mMeshShader->SetActive();
+    
 	// Set the view-projection matrix
-
-    mView = Matrix4::CreateLookAt(Vector3::Zero, Vector3::UnitX, Vector3::UnitZ);
+	mView = Matrix4::CreateLookAt(Vector3::Zero, Vector3::UnitX, Vector3::UnitZ);
 	mProjection = Matrix4::CreatePerspectiveFOV(GameMath::ToRadians(70.0f),
 		mScreenWidth, mScreenHeight, 25.0f, 10000.0f);
-    mSpriteShader->SetMatrixUniform("uViewProj", mView * mProjection);
-
-	// // Create basic mesh shader
-	// mMeshShader = new Shader();
-	// if (!mMeshShader->Load("Shaders/BasicMesh.vert", "Shaders/BasicMesh.frag"))
-	// {
-	// 	return false;
-	// }
-	// mMeshShader->SetActive();
-    
-	// // Set the view-projection matrix
-	// mView = Matrix4::CreateLookAt(Vector3::Zero, Vector3::UnitX, Vector3::UnitZ);
-	// mProjection = Matrix4::CreatePerspectiveFOV(GameMath::ToRadians(70.0f),
-	// 	mScreenWidth, mScreenHeight, 25.0f, 10000.0f);
-	// mMeshShader->SetMatrixUniform("uViewProj", mView * mProjection);
+	mMeshShader->SetMatrixUniform("uViewProj", mView * mProjection);
 	return true;
-}
-
-void Renderer::CreateSpriteVerts()
-{
-	float vertices[] = {
-		-0.5f, 0.5f, 0.f, 0.f, 0.f, 0.0f, 0.f, 0.f, // top left
-		0.5f, 0.5f, 0.f, 0.f, 0.f, 0.0f, 1.f, 0.f, // top right
-		0.5f,-0.5f, 0.f, 0.f, 0.f, 0.0f, 1.f, 1.f, // bottom right
-		-0.5f,-0.5f, 0.f, 0.f, 0.f, 0.0f, 0.f, 1.f  // bottom left
-	};
-
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 3, 0
-	};
-
-	mSpriteVerts = new VertexArray(vertices, 4, indices, 6);
 }
 
 Mesh* Renderer::GetMesh(const std::string & fileName)

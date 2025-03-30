@@ -8,7 +8,6 @@ add_executable(GameObjects Main.cpp
                     src/Component.cpp
                     src/GameMath.cpp
                     src/VertexArray.cpp
-                    src/SpriteComponent.cpp
                     src/Texture.cpp
                     src/Shader.cpp
                     src/MoveComponent.cpp
