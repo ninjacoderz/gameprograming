@@ -11,8 +11,6 @@
 #include <GL/glew.h>
 #include "Game.h"
 
-#define WINDOW_WIDTH 1024
-#define WINDOW_HEIGHT 768
 // Global game varriables
 Game *game ;
 
@@ -25,37 +23,9 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
         return SDL_APP_FAILURE;
     }    
     
-
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
     
-    SDL_Window *window = SDL_CreateWindow("My First SDL Window", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);    
-    if (!window) {
-        SDL_Log("SDL_CreateWindow() failed: %s\n", SDL_GetError());
-    }
-
-    SDL_GLContext context = SDL_GL_CreateContext(window);
-
-    
-
-    // Initialize GLEW
-	glewExperimental = GL_TRUE;
-	if (glewInit() != GLEW_OK)
-	{
-		SDL_Log("Failed to initialize GLEW.");
-	}
-	// On some platforms, GLEW will emit a benign error code,
-	// so clear it
-	glGetError();
-    
-    game = new Game(window, context);
+    game = new Game();
+    game->Initialize();
 
     return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
