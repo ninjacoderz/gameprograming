@@ -35,4 +35,7 @@ private:
     Uint32 mTicksCount;
     bool mIsRunning;
     bool mUpdatingActors;
+
+    // Game-specific code
+	class CameraActor* mCameraActor;
 };

@@ -17,6 +17,8 @@ add_executable(GameObjects Main.cpp
                     src/Renderer.cpp
                     src/Mesh.cpp
                     src/Game.cpp
+                    src/PlaneActor.cpp
+                    src/CameraActor.cpp
                 )
 
 target_include_directories(GameObjects PUBLIC

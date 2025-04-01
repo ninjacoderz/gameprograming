@@ -109,6 +109,10 @@ void Renderer::Draw()
 	// Enable depth buffering/disable alpha blend
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
+    // Set the mesh shader active
+	mMeshShader->SetActive();
+	// Update view-projection matrix
+	mMeshShader->SetMatrixUniform("uViewProj", mView * mProjection);
 	// Update lighting uniforms
 	SetLightUniforms(mMeshShader);
 	for (auto mc : mMeshComps)
@@ -179,7 +183,6 @@ bool Renderer::LoadShaders()
 		return false;
 	}
 	mMeshShader->SetActive();
-    
 	// Set the view-projection matrix
 	mView = Matrix4::CreateLookAt(Vector3::Zero, Vector3::UnitX, Vector3::UnitZ);
 	mProjection = Matrix4::CreatePerspectiveFOV(GameMath::ToRadians(70.0f),
