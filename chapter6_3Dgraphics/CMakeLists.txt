@@ -19,6 +19,7 @@ add_executable(GameObjects Main.cpp
                     src/Game.cpp
                     src/PlaneActor.cpp
                     src/CameraActor.cpp
+                    src/SpriteComponent.cpp
                 )
 
 target_include_directories(GameObjects PUBLIC

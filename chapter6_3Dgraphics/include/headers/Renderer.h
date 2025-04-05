@@ -22,6 +22,10 @@ public:
     void Shutdown();
     void UnloadData();
     void Draw();
+
+    void AddSprite(class SpriteComponent* sprite);
+	void RemoveSprite(class SpriteComponent* sprite);
+
     class Texture* GetTexture(const std::string& fileName);
     class Mesh* GetMesh(const std::string& fileName);
     void AddMeshComp(class MeshComponent* mesh);
@@ -33,13 +37,15 @@ public:
     DirectionalLight& GetDirectionalLight() { return mDirLight; }
 private:
     bool LoadShaders();
-
+    void CreateSpriteVerts();
     // Map of textures loaded
 	std::unordered_map<std::string, class Texture*> mTextures;
     // Game
 	class Game* mGame;
     // Mesh shader
     class Shader* mMeshShader;
+    // Sprite shader
+	class Shader* mSpriteShader;
     // Map of meshes loaded
 	std::unordered_map<std::string, class Mesh*> mMeshes;
     // All the sprite components drawn

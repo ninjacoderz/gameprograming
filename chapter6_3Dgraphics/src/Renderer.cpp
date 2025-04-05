@@ -8,10 +8,11 @@
 #include "VertexArray.h"
 #include "MeshComponent.h"
 #include <algorithm>
-
+#include "SpriteComponent.h"
 Renderer::Renderer(Game *game)
     :mGame(game)
     ,mMeshShader(nullptr)
+	,mSpriteShader(nullptr)
 {
     SDL_Log("Renderer initialized");
 }
@@ -67,32 +68,18 @@ bool Renderer::Initialize(float screenWidth, float screenHeight)
         return false;
     }
 
+	// Create quad for drawing sprites
+	CreateSpriteVerts();
+
     return true;
-}
-
-void Renderer::UnloadData()
-{
-    // Destroy textures
-    for (auto i : mTextures)
-    {
-        i.second->Unload();
-        delete i.second;
-    }
-    mTextures.clear();
-
-    // Destroy meshes
-    for (auto i : mMeshes)
-    {
-        i.second->Unload();
-        delete i.second;
-    }
-    mMeshes.clear();
 }
 
 void Renderer::Shutdown()
 {
     delete mSpriteVerts;
     mMeshShader->Unload();
+	mSpriteShader->Unload();
+	delete mSpriteShader;
     delete mMeshShader;
     SDL_GL_DestroyContext(mContext);
     SDL_DestroyWindow(mWindow);
@@ -118,6 +105,22 @@ void Renderer::Draw()
 	for (auto mc : mMeshComps)
 	{
 		mc->Draw(mMeshShader);
+	}
+
+	// Draw all sprite components
+	// Disable depth buffering
+	glDisable(GL_DEPTH_TEST);
+	// Enable alpha blending on the color buffer
+	glEnable(GL_BLEND);
+	glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+
+	// Set shader/vao as active
+	mSpriteShader->SetActive();
+	mSpriteVerts->SetActive();
+	for (auto sprite : mSprites)
+	{
+		sprite->Draw(mSpriteShader);
 	}
 	// Swap the buffers
 	SDL_GL_SwapWindow(mWindow);
@@ -176,6 +179,18 @@ Texture* Renderer::GetTexture(const std::string& fileName)
 
 bool Renderer::LoadShaders()
 {
+	// Create sprite shader
+	mSpriteShader = new Shader();
+	if (!mSpriteShader->Load("Shaders/Sprite.vert", "Shaders/Sprite.frag"))
+	{
+		return false;
+	}
+
+	mSpriteShader->SetActive();
+	// Set the view-projection matrix
+	Matrix4 viewProj = Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight);
+	mSpriteShader->SetMatrixUniform("uViewProj", viewProj);
+	
 	// Create basic mesh shader
 	mMeshShader = new Shader();
 	if (!mMeshShader->Load("Shaders/Phong.vert", "Shaders/Phong.frag"))
@@ -213,4 +228,63 @@ Mesh* Renderer::GetMesh(const std::string & fileName)
 		}
 	}
 	return m;
+}
+
+void Renderer::AddSprite(SpriteComponent* sprite)
+{
+	int drawOrder = sprite->GetDrawOrder();
+	auto iter = mSprites.begin();
+	for (; iter != mSprites.end(); ++iter)
+	{
+		if (drawOrder < (*iter)->GetDrawOrder())
+		{
+			break;
+		}
+	}
+	mSprites.insert(iter, sprite);
+}
+
+void Renderer::RemoveSprite(SpriteComponent* sprite)
+{
+	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
+	if (iter != mSprites.end())
+	{
+		mSprites.erase(iter);
+	}
+}
+
+void Renderer::CreateSpriteVerts()
+{
+	float vertices[] = {
+		-0.5f, 0.5f, 0.f, 0.f, 0.f, 0.0f, 0.f, 0.f, // top left
+		0.5f, 0.5f, 0.f, 0.f, 0.f, 0.0f, 1.f, 0.f, // top right
+		0.5f,-0.5f, 0.f, 0.f, 0.f, 0.0f, 1.f, 1.f, // bottom right
+		-0.5f,-0.5f, 0.f, 0.f, 0.f, 0.0f, 0.f, 1.f  // bottom left
+	};
+
+	unsigned int indices[] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	mSpriteVerts = new VertexArray(vertices, 4, indices, 6);
+}
+
+void Renderer::UnloadData()
+{
+    // Destroy textures
+    for (auto i : mTextures)
+    {
+        i.second->Unload();
+        delete i.second;
+    }
+    mTextures.clear();
+
+    // Destroy meshes
+    for (auto i : mMeshes)
+    {
+        i.second->Unload();
+        delete i.second;
+    }
+    mMeshes.clear();
 }

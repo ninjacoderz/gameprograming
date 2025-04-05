@@ -11,6 +11,7 @@
 #include "Renderer.h"
 #include "PlaneActor.h"
 #include "CameraActor.h"
+#include "SpriteComponent.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -227,6 +228,16 @@ void Game::LoadData(){
 
 	// Camera actor
 	mCameraActor = new CameraActor(this);
+
+	a = new Actor(this);
+	a->SetPosition(Vector3(-350.0f, -350.0f, 0.0f));
+	SpriteComponent* sc = new SpriteComponent(a);
+	sc->SetTexture(mRenderer->GetTexture("Assets/HealthBar.png"));
+
+	a = new Actor(this);
+	a->SetPosition(Vector3(300.0f, -200.0f, 0.0f));
+	sc = new SpriteComponent(a);
+	sc->SetTexture(mRenderer->GetTexture("Assets/Radar.png"));
 }
 
 void Game::UnloadData()
