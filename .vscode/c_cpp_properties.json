@@ -9,7 +9,7 @@
                 "${workspaceFolder}/soil/include/",
                 "${workspaceFolder}/rapidjson/include/",
                 "${workspaceFolder}/FMODProgrammersAPI/api/studio/inc",
-                "${workspaceFolder}/FMODProgrammersAPI/api/core/inc/**"
+                "${workspaceFolder}/FMODProgrammersAPI/api/core/inc"
             ],
             "browse": {
                 "path": [

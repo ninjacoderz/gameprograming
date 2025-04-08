@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include "SoundEvent.h"
 class Game {
 public: 
     Game();
@@ -19,7 +20,8 @@ public:
     // Get the renderer
     class Renderer* GetRenderer() { return mRenderer; }
     void ProcessInput(SDL_Event *event);
-
+    class AudioSystem* GetAudioSystem() { return mAudioSystem; }
+    void HandleKeyPress(int key);
 private:
     void UpdateGame();
     void GenerateOutput();
@@ -38,4 +40,8 @@ private:
 
     // Game-specific code
 	class CameraActor* mCameraActor;
+    class AudioSystem* mAudioSystem;
+
+    class SoundEvent mMusicEvent;
+	class SoundEvent mReverbSnap;
 };

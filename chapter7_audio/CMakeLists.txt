@@ -20,6 +20,9 @@ add_executable(GameObjects Main.cpp
                     src/PlaneActor.cpp
                     src/CameraActor.cpp
                     src/SpriteComponent.cpp
+                    src/AudioComponent.cpp
+                    src/AudioSystem.cpp
+                    src/SoundEvent.cpp
                 )
 
 target_include_directories(GameObjects PUBLIC
@@ -46,4 +49,13 @@ find_library(FMOD_STUDIO_LOCAL FMODStudio "${PROJECT_SOURCE_DIR}/../FMODProgramm
 find_library(OPENGL OpenGL)
 find_library(GLEW Glew)
 
-target_link_libraries(GameObjects PRIVATE  ${SDL3_LOCAL} ${SDL3_IMAGE_LOCAL} ${OPENGL} ${GLEW} ${SOIL_LOCAL} ${COREFOUNDATION})
+target_link_libraries(GameObjects PRIVATE  
+                    ${SDL3_LOCAL} 
+                    ${SDL3_IMAGE_LOCAL} 
+                    ${OPENGL} 
+                    ${GLEW} 
+                    ${SOIL_LOCAL} 
+                    ${COREFOUNDATION} 
+                    ${FMOD_LOCAL} 
+                    ${FMOD_STUDIO_LOCAL}
+                )

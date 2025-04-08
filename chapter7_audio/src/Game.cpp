@@ -12,6 +12,9 @@
 #include "PlaneActor.h"
 #include "CameraActor.h"
 #include "SpriteComponent.h"
+#include "AudioSystem.h"
+#include "SoundEvent.h"
+#include "AudioComponent.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -41,6 +44,16 @@ bool Game::Initialize()
 		return false;
 	}
 
+	mAudioSystem = new AudioSystem(this);
+	if (!mAudioSystem->Initialize())
+	{
+		SDL_Log("Failed to initialize audio system");
+		mAudioSystem->Shutdown();
+		delete mAudioSystem;
+		mAudioSystem = nullptr;
+		return false;
+	}
+
 	LoadData();
 	mTicksCount = SDL_GetTicks();
     return true;
@@ -67,13 +80,74 @@ void Game::ProcessInput(SDL_Event *event)
 			{
 				actor->ProcessInput(event->key.scancode);
 			}
+			HandleKeyPress(event->key.scancode);
 			mUpdatingActors = false;
             break;
          case SDL_EVENT_KEY_UP:
             break;
     }
+
 }
 
+void Game::HandleKeyPress(int key)
+{
+	SDL_Log("key pressed: %d", key);
+	SoundEvent explosion ;
+	mAudioSystem->SetBusVolume("bus:/", 1.0f);
+	switch (key)
+	{
+	case '-':
+	{
+		// Reduce master volume
+		float volume = mAudioSystem->GetBusVolume("bus:/");
+		volume = GameMath::Max(0.0f, volume - 0.1f);
+		mAudioSystem->SetBusVolume("bus:/", volume);
+		break;
+	}
+	case '=':
+	{
+		// Increase master volume
+		float volume = mAudioSystem->GetBusVolume("bus:/");
+		volume = GameMath::Min(1.0f, volume + 0.1f);
+		mAudioSystem->SetBusVolume("bus:/", volume);
+		break;
+	}
+	case 21:
+		// Play explosion
+		SDL_Log("Play explosion");
+		explosion = mAudioSystem->PlayEvent("event:/Explosion2D");
+		if (!explosion.IsValid())
+		{
+			SDL_Log("Failed to play sound event: event:/Explosion2D");
+		}
+		break;
+	case 'm':
+		// Toggle music pause state
+		mMusicEvent.SetPaused(!mMusicEvent.GetPaused());
+		break;
+	case 'r':
+		// Stop or start reverb snapshot
+		if (!mReverbSnap.IsValid())
+		{
+			mReverbSnap = mAudioSystem->PlayEvent("snapshot:/WithReverb");
+		}
+		else
+		{
+			mReverbSnap.Stop();
+		}
+		break;
+	case '1':
+		// Set default footstep surface
+		// mCameraActor->SetFootstepSurface(0.0f);
+		break;
+	case '2':
+		// Set grass footstep surface
+		// mCameraActor->SetFootstepSurface(0.5f);
+		break;
+	default:
+		break;
+	}
+}
 
 void Game::Shutdown()
 {
@@ -154,7 +228,7 @@ void Game::UpdateGame()
     {
         delete actor;
     }
-
+	mAudioSystem->Update(deltaTime);
 }
 
 void Game::GenerateOutput()
@@ -180,6 +254,11 @@ void Game::LoadData(){
 	a->SetScale(3.0f);
 	mc = new MeshComponent(a);
 	mc->SetMesh(mRenderer->GetMesh("Assets/Sphere.gpmesh"));
+	AudioComponent* ac = new AudioComponent(a);
+	ac->PlayEvent("event:/FireLoop");
+
+	// Start music
+	mMusicEvent = mAudioSystem->PlayEvent("event:/Music");
 
 	// Setup floor
 	const float start = -1250.0f;
