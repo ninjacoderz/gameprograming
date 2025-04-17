@@ -15,6 +15,7 @@
 #include "AudioSystem.h"
 #include "SoundEvent.h"
 #include "AudioComponent.h"
+#include "InputSystem.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -54,99 +55,64 @@ bool Game::Initialize()
 		return false;
 	}
 
+	mInputSystem = new InputSystem();
+	if(!mInputSystem->Initialize())
+	{
+		SDL_Log("Failed to initialize input system");
+		return false;
+	}
+
 	LoadData();
 	mTicksCount = SDL_GetTicks();
     return true;
 }
 
 void Game::RunLoop()
-{
-    UpdateGame();
-    GenerateOutput();
+{	
+	while (mIsRunning)
+	{
+		ProcessInput();
+		UpdateGame();
+		GenerateOutput();
+	}
 }
 
-void Game::ProcessInput(SDL_Event *event)
+void Game::ProcessInput()
 {
-    switch (event->type)
-    {
-        // If we get an SDL_QUIT event, end loop
-        case SDL_EVENT_QUIT:
-            // Game Quit
-            break;
-        case SDL_EVENT_KEY_DOWN:
-			// Call Actor Input 
-			mUpdatingActors = true;
-			for (auto actor : mActors)
-			{
-				actor->ProcessInput(event->key.scancode);
-			}
-			HandleKeyPress(event->key.scancode);
-			mUpdatingActors = false;
-            break;
-         case SDL_EVENT_KEY_UP:
-            break;
-    }
+    mInputSystem->PrepareForUpdate();
+	SDL_Event event;
+	while (SDL_PollEvent(&event))
+	{
+		SDL_Log("Event type: %d", event.type);
+		switch (event.type)
+		{
+		case SDL_EVENT_QUIT:
+			mIsRunning = false;
+			break;
+		case SDL_EVENT_MOUSE_WHEEL:
+			mInputSystem->ProcessEvent(event);
+			break;
+		default:
+			break;
+		}
+		
+	}
+	
+	mInputSystem->Update();
 
-}
+	const InputState& state = mInputSystem->GetState();
+	if (state.Keyboard.GetKeyState(SDL_SCANCODE_ESCAPE) == EReleased)
+	{
+		mIsRunning = false;
+	}
 
-void Game::HandleKeyPress(int key)
-{
-	SDL_Log("key pressed: %d", key);
-	SoundEvent explosion ;
-	mAudioSystem->SetBusVolume("bus:/", 1.0f);
-	switch (key)
+	mUpdatingActors = true;
+	for (auto actor : mActors)
 	{
-	case '-':
-	{
-		// Reduce master volume
-		float volume = mAudioSystem->GetBusVolume("bus:/");
-		volume = GameMath::Max(0.0f, volume - 0.1f);
-		mAudioSystem->SetBusVolume("bus:/", volume);
-		break;
+		actor->ProcessInput(state);
 	}
-	case '=':
-	{
-		// Increase master volume
-		float volume = mAudioSystem->GetBusVolume("bus:/");
-		volume = GameMath::Min(1.0f, volume + 0.1f);
-		mAudioSystem->SetBusVolume("bus:/", volume);
-		break;
-	}
-	case 21:
-		// Play explosion
-		SDL_Log("Play explosion");
-		explosion = mAudioSystem->PlayEvent("event:/Explosion2D");
-		if (!explosion.IsValid())
-		{
-			SDL_Log("Failed to play sound event: event:/Explosion2D");
-		}
-		break;
-	case 'm':
-		// Toggle music pause state
-		mMusicEvent.SetPaused(!mMusicEvent.GetPaused());
-		break;
-	case 'r':
-		// Stop or start reverb snapshot
-		if (!mReverbSnap.IsValid())
-		{
-			mReverbSnap = mAudioSystem->PlayEvent("snapshot:/WithReverb");
-		}
-		else
-		{
-			mReverbSnap.Stop();
-		}
-		break;
-	case '1':
-		// Set default footstep surface
-		// mCameraActor->SetFootstepSurface(0.0f);
-		break;
-	case '2':
-		// Set grass footstep surface
-		// mCameraActor->SetFootstepSurface(0.5f);
-		break;
-	default:
-		break;
-	}
+	mUpdatingActors = false;
+
 }
 
 void Game::Shutdown()
@@ -158,7 +124,18 @@ void Game::Shutdown()
 		delete mRenderer;
 		mRenderer = nullptr;
 	}
-
+	if(mInputSystem)
+	{
+		mInputSystem->Shutdown();
+		delete mInputSystem;
+		mInputSystem = nullptr;
+	}
+	if (mAudioSystem)
+	{
+		mAudioSystem->Shutdown();
+		delete mAudioSystem;
+		mAudioSystem = nullptr;
+	}
 	SDL_Quit();
 }
 

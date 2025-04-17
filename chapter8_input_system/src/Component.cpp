@@ -1,6 +1,6 @@
 
-#include "Component.h"
 #include "Actor.h"
+#include "Component.h"
 
 Component::Component(Actor* owner, int updateOrder)
 	:mOwner(owner)
@@ -13,8 +13,4 @@ Component::Component(Actor* owner, int updateOrder)
 Component::~Component()
 {
 	mOwner->RemoveComponent(this);
-}
-
-void Component::Update(float deltaTime)
-{
 }

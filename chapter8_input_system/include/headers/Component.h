@@ -1,6 +1,6 @@
 #pragma once
-
 #include <SDL3/SDL.h>
+#include "InputSystem.h"
 class Component
 {
 public:
@@ -10,11 +10,11 @@ public:
 	// Destructor
 	virtual ~Component();
 	// Update this component by delta time
-	virtual void Update(float deltaTime);
+	virtual void Update(float deltaTime) {};
 
 	int GetUpdateOrder() const { return mUpdateOrder; }
 	virtual void OnUpdateWorldTransform(){}
-	virtual void ProcessInput(const SDL_Scancode code ) {}
+	virtual void ProcessInput(const InputState& state) {};
 
 protected:
 	// Owning actor

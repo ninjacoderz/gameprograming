@@ -1,3 +1,4 @@
+// Actor.cpp
 #include "Actor.h"
 #include "Game.h"
 #include "Component.h"
@@ -64,16 +65,17 @@ void Actor::AddComponent(Component* component)
 }
 
 
-void Actor::ProcessInput(const SDL_Scancode code)
-{
+void Actor::ProcessInput(const struct InputState& state)
+{	
 	if (mState == EActive)
 	{
 		// First process input for components
 		for (auto comp : mComponents)
 		{
-			comp->ProcessInput(code);
+			comp->ProcessInput(state);
 		}
-		ActorInput(code);
+
+		ActorInput(state);
 	}
 }
 

@@ -19,9 +19,9 @@ public:
     void RemoveActor(class Actor* actor);
     // Get the renderer
     class Renderer* GetRenderer() { return mRenderer; }
-    void ProcessInput(SDL_Event *event);
+    void ProcessInput();
     class AudioSystem* GetAudioSystem() { return mAudioSystem; }
-    void HandleKeyPress(int key);
+
 private:
     void UpdateGame();
     void GenerateOutput();
@@ -44,4 +44,7 @@ private:
 
     class SoundEvent mMusicEvent;
 	class SoundEvent mReverbSnap;
+
+    class InputSystem* mInputSystem;
+
 };

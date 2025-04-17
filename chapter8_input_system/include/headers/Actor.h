@@ -3,6 +3,7 @@
 #include "GameMath.h"
 #include <vector>
 #include <SDL3/SDL.h>
+#include "InputSystem.h"
 class Actor
 {
     public:
@@ -19,8 +20,8 @@ class Actor
         virtual void Update(float deltaTime);
         virtual void UpdateActor(float deltaTime) {};
         void UpdateComponents(float deltaTime);
-        void ProcessInput(const SDL_Scancode code);
-        virtual void ActorInput(const SDL_Scancode keyState) {};
+        void ProcessInput(const InputState& state);
+        virtual void ActorInput(const InputState& keyState) {};
         // Getters/setters
         const Vector3& GetPosition() const { return mPosition; }
         class Game* GetGame() { return mGame; }

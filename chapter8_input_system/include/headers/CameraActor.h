@@ -14,7 +14,7 @@ class CameraActor : public Actor
 public:
 	CameraActor(class Game* game);
 	void UpdateActor(float deltaTime) override;
-	void ActorInput(const SDL_Scancode code) override;
+	void ActorInput(const InputState& code) override;
 private:
 	class MoveComponent* mMoveComp;
 };

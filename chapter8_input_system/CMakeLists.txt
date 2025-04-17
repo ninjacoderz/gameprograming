@@ -23,6 +23,7 @@ add_executable(GameObjects Main.cpp
                     src/AudioComponent.cpp
                     src/AudioSystem.cpp
                     src/SoundEvent.cpp
+                    src/InputSystem.cpp
                 )
 
 target_include_directories(GameObjects PUBLIC

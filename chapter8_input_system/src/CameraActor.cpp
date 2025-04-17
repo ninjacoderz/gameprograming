@@ -31,25 +31,25 @@ void CameraActor::UpdateActor(float deltaTime)
 	GetGame()->GetRenderer()->SetViewMatrix(view);
 }
 
-void CameraActor::ActorInput(const SDL_Scancode code)
+void CameraActor::ActorInput(const InputState& code)
 {
 	SDL_Log("CameraActor::ActorInput %d", code);
 	float forwardSpeed = 0.0f;
 	float angularSpeed = 0.0f;
 	// wasd movement
-	if (code == SDL_SCANCODE_W)
+	if (code.Keyboard.GetKeyValue(SDL_SCANCODE_W))
 	{
 		forwardSpeed += 300.0f;
 	}
-	if (code == SDL_SCANCODE_S)
+	if (code.Keyboard.GetKeyValue(SDL_SCANCODE_S))
 	{
 		forwardSpeed -= 300.0f;
 	}
-	if (code == SDL_SCANCODE_A)
+	if (code.Keyboard.GetKeyValue(SDL_SCANCODE_A))
 	{
 		angularSpeed -= GameMath::TwoPi;
 	}
-	if (code == SDL_SCANCODE_D)
+	if (code.Keyboard.GetKeyValue(SDL_SCANCODE_D))
 	{
 		angularSpeed += GameMath::TwoPi;
 	}
