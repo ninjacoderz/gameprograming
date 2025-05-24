@@ -60,9 +60,7 @@ void InputSystem::PrepareForUpdate()
 
 void InputSystem::SetRelativeMouseMode( SDL_Window *window, bool value)
 {
-    bool set = value ? true : false;
-    SDL_SetWindowRelativeMouseMode(window, set);
-
+    SDL_SetWindowRelativeMouseMode(window, value);
     mState.Mouse.mIsRelative = value;
 }
 

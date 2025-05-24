@@ -35,6 +35,7 @@ public:
     void SetLightUniforms(class Shader* shader);
     void SetAmbientLight(const Vector3& ambient) { mAmbientLight = ambient; }
     DirectionalLight& GetDirectionalLight() { return mDirLight; }
+	SDL_Window* getWindow() const { return mWindow; }
 private:
     bool LoadShaders();
     void CreateSpriteVerts();

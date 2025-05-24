@@ -4,7 +4,11 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+
+#include "FPSActor.h"
 #include "SoundEvent.h"
+#include "SpriteComponent.h"
+
 class Game {
 public: 
     Game();
@@ -39,12 +43,12 @@ private:
     bool mUpdatingActors;
 
     // Game-specific code
-	class CameraActor* mCameraActor;
     class AudioSystem* mAudioSystem;
 
     class SoundEvent mMusicEvent;
 	class SoundEvent mReverbSnap;
 
     class InputSystem* mInputSystem;
-
+    FPSActor * mFPSActor;
+    SpriteComponent * mCrosshair;
 };

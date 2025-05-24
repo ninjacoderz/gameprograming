@@ -29,11 +29,11 @@ void MoveComponent::Update(float deltaTime)
 		mOwner->SetRotation(rot);
 	}
 	
-	if (!GameMath::NearZero(mForwardSpeed))
+	if (!GameMath::NearZero(mForwardSpeed) || !GameMath::NearZero(mStrafeSpeed))
 	{
 		Vector3 pos = mOwner->GetPosition();
 		pos += mOwner->GetForward() * mForwardSpeed * deltaTime;
-
+		pos += mOwner->GetRight() * mStrafeSpeed * deltaTime;
 		mOwner->SetPosition(pos);
 	}
 }

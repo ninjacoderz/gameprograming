@@ -11,7 +11,7 @@
 #include <GL/glew.h>
 #include "Game.h"
 
-// Global game varriables
+// Global game variables
 Game *game ;
 
 /* This function runs once at startup. */

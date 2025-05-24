@@ -4,27 +4,29 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(GameObjects Main.cpp 
-                    src/Actor.cpp
-                    src/Component.cpp
-                    src/GameMath.cpp
-                    src/VertexArray.cpp
-                    src/Texture.cpp
-                    src/Shader.cpp
-                    src/MoveComponent.cpp
-                    src/CircleComponent.cpp
-                    src/Random.cpp
-                    src/MeshComponent.cpp
-                    src/Renderer.cpp
-                    src/Mesh.cpp
-                    src/Game.cpp
-                    src/PlaneActor.cpp
-                    src/CameraActor.cpp
-                    src/SpriteComponent.cpp
-                    src/AudioComponent.cpp
-                    src/AudioSystem.cpp
-                    src/SoundEvent.cpp
-                    src/InputSystem.cpp
-                )
+    src/Actor.cpp
+    src/Component.cpp
+    src/GameMath.cpp
+    src/VertexArray.cpp
+    src/Texture.cpp
+    src/Shader.cpp
+    src/MoveComponent.cpp
+    src/CircleComponent.cpp
+    src/Random.cpp
+    src/MeshComponent.cpp
+    src/Renderer.cpp
+    src/Mesh.cpp
+    src/Game.cpp
+    src/PlaneActor.cpp
+        src/SpriteComponent.cpp
+    src/AudioComponent.cpp
+    src/AudioSystem.cpp
+    src/SoundEvent.cpp
+    src/InputSystem.cpp
+    src/FPSActor.cpp
+    src/FPSCamera.cpp
+    src/CameraComponent.cpp
+)
 
 target_include_directories(GameObjects PUBLIC
                             "${PROJECT_SOURCE_DIR}/include/headers"

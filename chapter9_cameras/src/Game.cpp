@@ -10,12 +10,12 @@
 #include "Mesh.h"
 #include "Renderer.h"
 #include "PlaneActor.h"
-#include "CameraActor.h"
 #include "SpriteComponent.h"
 #include "AudioSystem.h"
 #include "SoundEvent.h"
 #include "AudioComponent.h"
 #include "InputSystem.h"
+#include "FPSActor.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -61,6 +61,9 @@ bool Game::Initialize()
 		SDL_Log("Failed to initialize input system");
 		return false;
 	}
+	mInputSystem->SetRelativeMouseMode(mRenderer->getWindow(), true);
+	// Different camera actors
+	mFPSActor = new FPSActor(this);
 
 	LoadData();
 	mTicksCount = SDL_GetTicks();
@@ -83,7 +86,6 @@ void Game::ProcessInput()
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
-		SDL_Log("Event type: %d", event.type);
 		switch (event.type)
 		{
 		case SDL_EVENT_QUIT:
@@ -283,7 +285,6 @@ void Game::LoadData(){
 	dir.mSpecColor = Vector3(0.8f, 0.8f, 0.8f);
 
 	// Camera actor
-	mCameraActor = new CameraActor(this);
 
 	a = new Actor(this);
 	a->SetPosition(Vector3(-350.0f, -350.0f, 0.0f));
@@ -291,9 +292,14 @@ void Game::LoadData(){
 	sc->SetTexture(mRenderer->GetTexture("Assets/HealthBar.png"));
 
 	a = new Actor(this);
-	a->SetPosition(Vector3(300.0f, -200.0f, 0.0f));
+	a->SetPosition(Vector3(-390.0f, 275.0f, 0.0f));
 	sc = new SpriteComponent(a);
 	sc->SetTexture(mRenderer->GetTexture("Assets/Radar.png"));
+
+	a = new Actor(this);
+	a->SetScale(2.0f);
+	mCrosshair = new SpriteComponent(a);
+	mCrosshair->SetTexture(mRenderer->GetTexture("Assets/Crosshair.png"));
 }
 
 void Game::UnloadData()
