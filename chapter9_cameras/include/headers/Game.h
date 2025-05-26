@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "FPSActor.h"
+#include "OrbitActor.h"
 #include "SoundEvent.h"
 #include "SpriteComponent.h"
 
@@ -51,4 +52,10 @@ private:
     class InputSystem* mInputSystem;
     FPSActor * mFPSActor;
     SpriteComponent * mCrosshair;
+
+    class FollowActor* mFollowActor;
+    OrbitActor * mOrbitActor;
+    class SplineActor* mSplineActor;
+    
+    void ChangeCamera(int mode) const;
 };

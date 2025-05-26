@@ -18,7 +18,7 @@ add_executable(GameObjects Main.cpp
     src/Mesh.cpp
     src/Game.cpp
     src/PlaneActor.cpp
-        src/SpriteComponent.cpp
+    src/SpriteComponent.cpp
     src/AudioComponent.cpp
     src/AudioSystem.cpp
     src/SoundEvent.cpp
@@ -26,6 +26,12 @@ add_executable(GameObjects Main.cpp
     src/FPSActor.cpp
     src/FPSCamera.cpp
     src/CameraComponent.cpp
+    src/FollowCamera.cpp
+    src/FollowActor.cpp
+    src/OrbitActor.cpp
+    src/OrbitCamera.cpp
+    src/SplineActor.cpp
+    src/SplineCamera.cpp
 )
 
 target_include_directories(GameObjects PUBLIC

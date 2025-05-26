@@ -14,8 +14,11 @@
 #include "AudioSystem.h"
 #include "SoundEvent.h"
 #include "AudioComponent.h"
+#include "FollowActor.h"
 #include "InputSystem.h"
 #include "FPSActor.h"
+#include "OrbitActor.h"
+#include "SplineActor.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -64,7 +67,10 @@ bool Game::Initialize()
 	mInputSystem->SetRelativeMouseMode(mRenderer->getWindow(), true);
 	// Different camera actors
 	mFPSActor = new FPSActor(this);
-
+	mFollowActor = new FollowActor(this);
+	mOrbitActor = new OrbitActor(this);
+	mSplineActor = new SplineActor(this);
+	
 	LoadData();
 	mTicksCount = SDL_GetTicks();
     return true;
@@ -300,6 +306,8 @@ void Game::LoadData(){
 	a->SetScale(2.0f);
 	mCrosshair = new SpriteComponent(a);
 	mCrosshair->SetTexture(mRenderer->GetTexture("Assets/Crosshair.png"));
+
+	ChangeCamera(4);
 }
 
 void Game::UnloadData()
@@ -314,5 +322,42 @@ void Game::UnloadData()
 	if (mRenderer)
 	{
 		mRenderer->UnloadData();
+	}
+}
+
+void Game::ChangeCamera(int mode) const {
+	// Disable everything
+	mFPSActor->SetState(Actor::EPaused);
+	mFPSActor->SetVisible(false);
+	mCrosshair->SetVisible(false);
+	mFollowActor->SetState(Actor::EPaused);
+	mFollowActor->SetVisible(false);
+
+	mOrbitActor->SetState(Actor::EPaused);
+	mOrbitActor->SetVisible(false);
+
+	// Enable the camera specified by the mode
+	switch (mode)
+	{
+		case 1:
+			mFPSActor->SetState(Actor::EActive);
+			mFPSActor->SetVisible(true);
+			mCrosshair->SetVisible(true);
+			break;
+		case 2:
+			mFollowActor->SetState(Actor::EActive);
+			mFollowActor->SetVisible(true);
+			break;
+
+		case 3:
+			mOrbitActor->SetState(Actor::EActive);
+			mOrbitActor->SetVisible(true);
+			break;
+		case '4':
+			mSplineActor->SetState(Actor::EActive);
+			mSplineActor->RestartSpline();
+			break;
+		default:
+			break;
 	}
 }

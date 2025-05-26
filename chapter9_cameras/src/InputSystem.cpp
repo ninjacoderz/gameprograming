@@ -82,6 +82,38 @@ void InputSystem::Update() {
     mState.Mouse.mMousePos.y = y;
 }
 
+ButtonState MouseState::GetButtonState(int button) const
+{
+    int mask = SDL_BUTTON_MASK(button);
+    if ((mask & mPrevButtons) == 0)
+    {
+        if ((mask & mCurrButtons) == 0)
+        {
+            return ENone;
+        }
+        else
+        {
+            return EPressed;
+        }
+    }
+    else
+    {
+        if ((mask & mCurrButtons) == 0)
+        {
+            return EReleased;
+        }
+        else
+        {
+            return EHeld;
+        }
+    }
+}
+
+bool MouseState::GetButtonValue(int button) const
+{
+    return (SDL_BUTTON_MASK(button) & mCurrButtons);
+}
+
 void InputSystem::ProcessEvent(SDL_Event& event)
 {
     switch (event.type)

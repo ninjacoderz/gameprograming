@@ -57,7 +57,6 @@ void FPSActor::UpdateActor(float deltaTime)
 
 void FPSActor::ActorInput(const InputState& code)
 {
-    SDL_Log("ActorInput %d %d" , code.Mouse.GetPosition().x, code.Mouse.GetPosition().y);
     float forwardSpeed = 0.0f;
     float strafeSpeed = 0.0f;
     // wasd movement
