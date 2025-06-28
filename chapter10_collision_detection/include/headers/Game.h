@@ -37,7 +37,7 @@ private:
     void GenerateOutput();
     virtual void LoadData();
     void UnloadData();
-    
+    void HandleKeyPress(int key);
 
     std::vector<class Actor*> mActors;
     std::vector<class Actor*> mPendingActors;

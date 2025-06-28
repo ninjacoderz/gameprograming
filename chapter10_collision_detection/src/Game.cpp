@@ -20,7 +20,7 @@
 #include "OrbitActor.h"
 #include "PhysWorld.h"
 #include "SplineActor.h"
-
+#include "TargetActor.h"
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 
@@ -99,6 +99,8 @@ void Game::ProcessInput()
 			break;
 		case SDL_EVENT_MOUSE_WHEEL:
 			mInputSystem->ProcessEvent(event);
+		case SDL_EVENT_MOUSE_BUTTON_DOWN:
+			HandleKeyPress(event.button.button);
 			break;
 		default:
 			break;
@@ -122,6 +124,38 @@ void Game::ProcessInput()
 	mUpdatingActors = false;
 
 }
+
+void Game::HandleKeyPress(int key)
+{
+	switch (key)
+	{
+	case '-':
+	{
+		// Reduce master volume
+		float volume = mAudioSystem->GetBusVolume("bus:/");
+		volume = GameMath::Max(0.0f, volume - 0.1f);
+		mAudioSystem->SetBusVolume("bus:/", volume);
+		break;
+	}
+	case '=':
+	{
+		// Increase master volume
+		float volume = mAudioSystem->GetBusVolume("bus:/");
+		volume = GameMath::Min(1.0f, volume + 0.1f);
+		mAudioSystem->SetBusVolume("bus:/", volume);
+		break;
+	} 
+	case SDL_BUTTON_LEFT:
+	{
+		// Fire weapon
+		mFPSActor->Shoot();
+		break;
+	}
+	default:
+		break;
+	}
+}
+
 
 void Game::Shutdown()
 {
@@ -311,6 +345,16 @@ void Game::LoadData(){
 	mFollowActor = new FollowActor(this);
 	mOrbitActor = new OrbitActor(this);
 	mSplineActor = new SplineActor(this);
+
+	// Create target actors
+	a = new TargetActor(this);
+	a->SetPosition(Vector3(1450.0f, 0.0f, 100.0f));
+	a = new TargetActor(this);
+	a->SetPosition(Vector3(1450.0f, 0.0f, 400.0f));
+	a = new TargetActor(this);
+	a->SetPosition(Vector3(1450.0f, -500.0f, 200.0f));
+	a = new TargetActor(this);
+	a->SetPosition(Vector3(1450.0f, 500.0f, 200.0f));
 
 	ChangeCamera(1);
 }

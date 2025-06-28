@@ -35,6 +35,9 @@ add_executable(GameObjects Main.cpp
     src/Collision.cpp
     src/PhysWorld.cpp
     src/BoxComponent.cpp
+    src/BallActor.cpp
+    src/BallMove.cpp
+    src/TargetActor.cpp
 )
 
 target_include_directories(GameObjects PUBLIC

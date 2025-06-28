@@ -289,3 +289,16 @@ void Renderer::UnloadData()
     }
     mMeshes.clear();
 }
+
+Vector3 Renderer::Unproject(const Vector3& screenPoint) const
+{
+	// Convert screenPoint to device coordinates (between -1 and +1)
+	Vector3 deviceCoord = screenPoint;
+	deviceCoord.x /= (mScreenWidth) * 0.5f;
+	deviceCoord.y /= (mScreenHeight) * 0.5f;
+
+	// Transform vector by unprojection matrix
+	Matrix4 unprojection = mView * mProjection;
+	unprojection.Invert();
+	return Vector3::TransformWithPerspDiv(deviceCoord, unprojection);
+}

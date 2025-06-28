@@ -42,6 +42,7 @@ bool PhysWorld::SegmentCast(const LineSegment& l, CollisionInfo& outColl)
 			}
 		}
 	}
+	SDL_Log("Ahihi: %d", collided);
 	return collided;
 }
 

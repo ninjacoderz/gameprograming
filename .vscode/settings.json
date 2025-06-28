@@ -99,7 +99,9 @@
         "set": "cpp",
         "unordered_set": "cpp",
         "__string": "cpp",
-        "any": "cpp"
+        "any": "cpp",
+        "execution": "cpp",
+        "print": "cpp"
     },
     "makefile.makefilePath": "",
     "C_Cpp.errorSquiggles": "enabled"
