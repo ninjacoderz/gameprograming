@@ -24,7 +24,7 @@ bool PhysWorld::SegmentCast(const LineSegment& l, CollisionInfo& outColl)
 	float closestT = GameMath::Infinity;
 	Vector3 norm;
 	// Test against all boxes
-	for (auto box : mBoxes)
+	for (auto box : mBoxes) 
 	{
 		float t;
 		// Does the segment intersect with the box?
@@ -42,7 +42,6 @@ bool PhysWorld::SegmentCast(const LineSegment& l, CollisionInfo& outColl)
 			}
 		}
 	}
-	SDL_Log("Ahihi: %d", collided);
 	return collided;
 }
 

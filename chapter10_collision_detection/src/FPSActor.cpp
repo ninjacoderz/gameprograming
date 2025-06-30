@@ -42,6 +42,7 @@ FPSActor::FPSActor(Game* game)
 void FPSActor::UpdateActor(float deltaTime)
 {
     Actor::UpdateActor(deltaTime);
+    FixCollisions();
 
     // Play the footstep if we're moving and haven't recently
     mLastFootstep -= deltaTime;
@@ -65,8 +66,6 @@ void FPSActor::UpdateActor(float deltaTime)
     // Rotate by pitch from camera
     q = Quaternion::Concatenate(q, Quaternion(GetRight(), mCameraComp->GetPitch()));
     mFPSModel->SetRotation(q);
-
-    FixCollisions();
 }
 
 void FPSActor::ActorInput(const InputState& code)

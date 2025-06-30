@@ -10,7 +10,7 @@ public:
     ~BoxComponent();  
     void OnUpdateWorldTransform() override;
     void SetObjectBox(const AABB& box) { mObjectBox = box; };
-    const AABB& GetWorldBox() const { return mObjectBox; };
+    const AABB& GetWorldBox() const { return mWorldBox; };
     void SetShouldRotate(bool shouldRotate) { mShouldRotate = shouldRotate; }
 
 private:
