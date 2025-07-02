@@ -5,12 +5,13 @@
             "includePath": [
                 "${workspaceFolder}/SDL/include/",
                 "${workspaceFolder}/SDL_image/include/",
-                "${workspaceFolder}/chapter10_collision_detection/include/headers/",
+                "${workspaceFolder}/SDL_ttf/include/SDL3_ttf/",
                 "${workspaceFolder}/soil/include/",
                 "${workspaceFolder}/rapidjson/include/",
                 "${workspaceFolder}/FMODProgrammersAPI/api/studio/inc",
                 "${workspaceFolder}/FMODProgrammersAPI/api/core/inc",
-                "${workspaceFolder}/glew/include"
+                "${workspaceFolder}/glew/include",
+                "${workspaceFolder}/chapter11_user_interface/include/headers/"
             ],
             "browse": {
                 "path": [
