@@ -34,8 +34,17 @@ public:
     std::vector<class PlaneActor*>& GetPlanes() { return mPlanes; }
     const std::string& GetText(const std::string& key);
     class Font* GetFont(const std::string& fileName);
-    const std::vector<class UIScreen*>& getUIStack();
+    const std::vector<class UIScreen*>& GetUIStack() { return mUIStack; };
+    void PushUI(class UIScreen* screen);
     
+    enum GameState
+	{
+		EGameplay,
+		EPaused,
+		EQuit
+	};
+    GameState GetState() const { return mGameState; }
+    void SetState(GameState state) { mGameState = state; }
 private:
     void UpdateGame();
     void GenerateOutput();
@@ -49,7 +58,6 @@ private:
     class Renderer* mRenderer;
 
     Uint32 mTicksCount;
-    bool mIsRunning;
     bool mUpdatingActors;
 
     // Game-specific code
@@ -76,6 +84,7 @@ private:
     std::unordered_map<std::string, class Font*> mFonts;
 
     std::vector <class UIScreen*> mUIStack;
-    void PushUI(class UIScreen* screen);
-    
+
+    class HUD* mHUD;
+    GameState mGameState;
 };

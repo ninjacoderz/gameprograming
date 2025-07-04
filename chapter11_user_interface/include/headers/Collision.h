@@ -67,7 +67,7 @@ bool Intersect(const Sphere& s, const AABB& box);
 bool Intersect(const LineSegment& l, const Sphere& s, float& outT);
 bool Intersect(const LineSegment& l, const Plane& p, float& outT);
 bool Intersect(const LineSegment& l, const AABB& b, float& outT,
-	Vector3& outNorm);
+	Vector3& outNorm); 
 
 bool SweptSphere(const Sphere& P0, const Sphere& P1,
 	const Sphere& Q0, const Sphere& Q1, float& t);

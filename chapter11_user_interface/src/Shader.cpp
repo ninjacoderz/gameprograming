@@ -99,7 +99,7 @@ bool Shader::CompileShader(const std::string& fileName,
 	GLuint& outShader)
 {
 	// Open file
-	std::ifstream shaderFile(fileName);
+	std::ifstream shaderFile("./" + fileName);
 	if (shaderFile.is_open())
 	{
 		// Read all the text into a string

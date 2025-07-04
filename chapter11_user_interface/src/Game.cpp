@@ -24,15 +24,16 @@
 #include "SDL_ttf.h"
 #include "Font.h"
 #include "UIScreen.h"
-
+#include "HUD.h"
+#include "PauseMenu.h"
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 
 Game::Game()
 :mRenderer(nullptr)
 ,mTicksCount(0)
-,mIsRunning(true)
 ,mPhysWorld(nullptr)
+,mGameState(EGameplay)
 ,mUpdatingActors(false){
 	SDL_Log("Game no-args constructor called");
 }
@@ -45,6 +46,13 @@ bool Game::Initialize()
 		return false;
 	}
 	SDL_Log("Game initialized");
+
+	mText =  {
+		{ "ResumeButton", "Resume" },
+		{ "QuitButton", "Quit" },
+		{ "PauseTitle", "Paused" }
+	};
+
     mRenderer = new Renderer(this);
 	if (!mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT))
 	{
@@ -76,8 +84,8 @@ bool Game::Initialize()
 	mPhysWorld = new PhysWorld(this);
 
 	// Initilize SDL_tff
-	if(TTF_Init() !=0) {
-		SDL_Log("Failed to initilize SDL_tff");
+	if(TTF_Init() == 0) {
+		SDL_Log("Failed to initilize SDL_ttf");
 		return false;
 	}
 
@@ -88,7 +96,7 @@ bool Game::Initialize()
 
 void Game::RunLoop()
 {	
-	while (mIsRunning)
+	while (mGameState != EQuit)
 	{
 		ProcessInput();
 		UpdateGame();
@@ -105,13 +113,29 @@ void Game::ProcessInput()
 		switch (event.type)
 		{
 		case SDL_EVENT_QUIT:
-			mIsRunning = false;
+			mGameState = EQuit;
 			break;
-		case SDL_EVENT_MOUSE_WHEEL:
-			mInputSystem->ProcessEvent(event);
+		
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			HandleKeyPress(event.button.button);
 			break;
+		
+		case SDL_EVENT_KEY_DOWN:
+			if (!event.key.repeat)
+			{
+				if (mGameState == EGameplay)
+				{
+					SDL_Log("Handle Press Key In Game");
+					HandleKeyPress(event.key.key);
+				}
+				else if (!mUIStack.empty())
+				{
+					mUIStack.back()->
+						HandleKeyPress(event.key.key);
+				}
+			}
+			break;
+			
 		default:
 			break;
 		}
@@ -123,15 +147,23 @@ void Game::ProcessInput()
 	const InputState& state = mInputSystem->GetState();
 	if (state.Keyboard.GetKeyState(SDL_SCANCODE_ESCAPE) == EReleased)
 	{
-		mIsRunning = false;
+		mGameState = EQuit;
 	}
-
-	mUpdatingActors = true;
-	for (auto actor : mActors)
+	
+	if (mGameState == EGameplay)
 	{
-		actor->ProcessInput(state);
+		mUpdatingActors = true;
+
+		for (auto actor : mActors)
+		{
+			actor->ProcessInput(state);
+		}
+		mUpdatingActors = false;
 	}
-	mUpdatingActors = false;
+	else if (!mUIStack.empty())
+	{
+		mUIStack.back()->ProcessInput(state);
+	}
 
 }
 
@@ -139,6 +171,13 @@ void Game::HandleKeyPress(int key)
 {
 	switch (key)
 	{
+	case SDLK_ESCAPE:
+	{
+		// Create pause menu
+		SDL_Log("Pause Menu");
+		new PauseMenu(this);
+		break;
+	}
 	case '-':
 	{
 		// Reduce master volume
@@ -292,7 +331,6 @@ void Game::GenerateOutput()
 
 void Game::LoadData(){
 
-
 	Actor* a = new Actor(this);
 	a->SetPosition(Vector3(200.0f, 75.0f, 0.0f));
 	a->SetScale(100.0f);
@@ -388,6 +426,9 @@ void Game::LoadData(){
 	a->SetPosition(Vector3(1450.0f, -500.0f, 200.0f));
 	a = new TargetActor(this);
 	a->SetPosition(Vector3(1450.0f, 500.0f, 200.0f));
+
+	// UI elements
+	mHUD = new HUD(this);
 
 	ChangeCamera(1);
 }
@@ -494,4 +535,9 @@ Font* Game::GetFont(const std::string& fileName)
 		}
 		return font;
 	}
+}
+
+void Game::PushUI(UIScreen* screen)
+{
+	mUIStack.emplace_back(screen);
 }

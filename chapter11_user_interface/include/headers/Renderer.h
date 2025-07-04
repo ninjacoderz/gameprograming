@@ -38,6 +38,9 @@ public:
 	SDL_Window* getWindow() const { return mWindow; }
 
     Vector3 Unproject(const Vector3& screenPoint) const;
+
+    float GetScreenWidth() const { return mScreenWidth; }
+	float GetScreenHeight() const { return mScreenHeight; }
 private:
     bool LoadShaders();
     void CreateSpriteVerts();

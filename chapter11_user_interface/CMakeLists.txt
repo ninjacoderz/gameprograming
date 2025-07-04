@@ -40,6 +40,9 @@ add_executable(GameObjects Main.cpp
     src/TargetActor.cpp
     src/Font.cpp
     src/UIScreen.cpp
+    src/HUD.cpp
+    src/PauseMenu.cpp
+    src/DialogBox.cpp
 )
 
 target_include_directories(GameObjects PUBLIC
@@ -76,4 +79,5 @@ target_link_libraries(GameObjects PRIVATE
                     ${COREFOUNDATION} 
                     ${FMOD_LOCAL} 
                     ${FMOD_STUDIO_LOCAL}
+                    ${SDL3_TTF_LOCAL}
                 )

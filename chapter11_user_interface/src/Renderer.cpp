@@ -126,9 +126,10 @@ void Renderer::Draw()
 		sprite->Draw(mSpriteShader);
 	}
 
-	for (auto ui: mGame->getUIStack()) {
+	for (auto ui: mGame->GetUIStack()) {
 		ui->Draw(mSpriteShader);
 	}
+	
 	// Swap the buffers
 	SDL_GL_SwapWindow(mWindow);
 }
