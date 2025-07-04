@@ -43,6 +43,7 @@ add_executable(GameObjects Main.cpp
     src/HUD.cpp
     src/PauseMenu.cpp
     src/DialogBox.cpp
+    src/TargetComponent.cpp
 )
 
 target_include_directories(GameObjects PUBLIC

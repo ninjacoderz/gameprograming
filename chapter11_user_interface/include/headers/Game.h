@@ -36,7 +36,8 @@ public:
     class Font* GetFont(const std::string& fileName);
     const std::vector<class UIScreen*>& GetUIStack() { return mUIStack; };
     void PushUI(class UIScreen* screen);
-    
+    void LoadText(const std::string& fileName);
+
     enum GameState
 	{
 		EGameplay,
@@ -45,6 +46,9 @@ public:
 	};
     GameState GetState() const { return mGameState; }
     void SetState(GameState state) { mGameState = state; }
+    class HUD* GetHUD() { return mHUD; }
+    class FPSActor* GetPlayer() { return mFPSActor; }
+    
 private:
     void UpdateGame();
     void GenerateOutput();

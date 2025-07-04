@@ -78,11 +78,10 @@ void UIScreen::ProcessInput(const InputState& state)
 	// Do we have buttons?
 	if (!mButtons.empty())
 	{
-		// Get position of mouse
-		float x, y;
-		SDL_GetMouseState(&x, &y);
+
 		// Convert to (0,0) center coordinates
-		Vector2 mousePos(x, y);
+		Vector2 mousePos = state.Mouse.GetPosition();
+
 		mousePos.x -= mGame->GetRenderer()->GetScreenWidth() * 0.5f;
 		mousePos.y = mGame->GetRenderer()->GetScreenHeight() * 0.5f - mousePos.y;
 		

@@ -26,6 +26,10 @@
 #include "UIScreen.h"
 #include "HUD.h"
 #include "PauseMenu.h"
+#include <fstream>
+#include <sstream>
+#include "rapidjson/document.h"
+
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
 
@@ -46,12 +50,6 @@ bool Game::Initialize()
 		return false;
 	}
 	SDL_Log("Game initialized");
-
-	mText =  {
-		{ "ResumeButton", "Resume" },
-		{ "QuitButton", "Quit" },
-		{ "PauseTitle", "Paused" }
-	};
 
     mRenderer = new Renderer(this);
 	if (!mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -106,7 +104,6 @@ void Game::RunLoop()
 
 void Game::ProcessInput()
 {
-    mInputSystem->PrepareForUpdate();
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
 	{
@@ -117,9 +114,17 @@ void Game::ProcessInput()
 			break;
 		
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
-			HandleKeyPress(event.button.button);
+			if (mGameState == EGameplay)
+			{
+				HandleKeyPress(event.button.button);
+			}
+			else if (!mUIStack.empty())
+			{
+				mUIStack.back()->
+					HandleKeyPress(event.button.button);
+			}
 			break;
-		
+
 		case SDL_EVENT_KEY_DOWN:
 			if (!event.key.repeat)
 			{
@@ -141,14 +146,19 @@ void Game::ProcessInput()
 		}
 		
 	}
-	
+
+	mInputSystem->PrepareForUpdate();
+
+	if (mGameState != EGameplay) {
+		mInputSystem->SetRelativeMouseMode(mRenderer->getWindow(), false);
+	}
+	else {
+		mInputSystem->SetRelativeMouseMode(mRenderer->getWindow(), true);
+	}
+
 	mInputSystem->Update();
 
 	const InputState& state = mInputSystem->GetState();
-	if (state.Keyboard.GetKeyState(SDL_SCANCODE_ESCAPE) == EReleased)
-	{
-		mGameState = EQuit;
-	}
 	
 	if (mGameState == EGameplay)
 	{
@@ -194,6 +204,18 @@ void Game::HandleKeyPress(int key)
 		mAudioSystem->SetBusVolume("bus:/", volume);
 		break;
 	} 
+	case '1':
+	{
+		// Load English text
+		LoadText("Assets/English.gptext");
+		break;
+	}
+	case '2':
+	{
+		// Load Russian text
+		LoadText("Assets/Russian.gptext");
+		break;
+	}
 	case SDL_BUTTON_LEFT:
 	{
 		// Fire weapon
@@ -331,6 +353,9 @@ void Game::GenerateOutput()
 
 void Game::LoadData(){
 
+	// Load English text
+	LoadText("Assets/English.gptext");
+
 	Actor* a = new Actor(this);
 	a->SetPosition(Vector3(200.0f, 75.0f, 0.0f));
 	a->SetScale(100.0f);
@@ -396,26 +421,29 @@ void Game::LoadData(){
 	dir.mDiffuseColor = Vector3(0.78f, 0.88f, 1.0f);
 	dir.mSpecColor = Vector3(0.8f, 0.8f, 0.8f);
 
-	a = new Actor(this);
-	a->SetPosition(Vector3(-350.0f, -350.0f, 0.0f));
-	SpriteComponent* sc = new SpriteComponent(a);
-	sc->SetTexture(mRenderer->GetTexture("Assets/HealthBar.png"));
+	// a = new Actor(this);
+	// a->SetPosition(Vector3(-350.0f, -350.0f, 0.0f));
+	// SpriteComponent* sc = new SpriteComponent(a);
+	// sc->SetTexture(mRenderer->GetTexture("Assets/HealthBar.png"));
 
-	a = new Actor(this);
-	a->SetPosition(Vector3(-390.0f, 275.0f, 0.0f));
-	sc = new SpriteComponent(a);
-	sc->SetTexture(mRenderer->GetTexture("Assets/Radar.png"));
+	// a = new Actor(this);
+	// a->SetPosition(Vector3(-390.0f, 275.0f, 0.0f));
+	// sc = new SpriteComponent(a);
+	// sc->SetTexture(mRenderer->GetTexture("Assets/Radar.png"));
 
-	a = new Actor(this);
-	a->SetScale(2.0f);
-	mCrosshair = new SpriteComponent(a);
-	mCrosshair->SetTexture(mRenderer->GetTexture("Assets/Crosshair.png"));
+	// a = new Actor(this);
+	// a->SetScale(2.0f);
+	// mCrosshair = new SpriteComponent(a);
+	// mCrosshair->SetTexture(mRenderer->GetTexture("Assets/Crosshair.png")); 
 
 	// Different camera actors
 	mFPSActor = new FPSActor(this);
 	mFollowActor = new FollowActor(this);
 	mOrbitActor = new OrbitActor(this);
 	mSplineActor = new SplineActor(this);
+
+	// UI elements
+	mHUD = new HUD(this);
 
 	// Create target actors
 	a = new TargetActor(this);
@@ -427,8 +455,7 @@ void Game::LoadData(){
 	a = new TargetActor(this);
 	a->SetPosition(Vector3(1450.0f, 500.0f, 200.0f));
 
-	// UI elements
-	mHUD = new HUD(this);
+	
 
 	ChangeCamera(1);
 }
@@ -452,7 +479,7 @@ void Game::ChangeCamera(int mode) const {
 	// Disable everything
 	mFPSActor->SetState(Actor::EPaused);
 	mFPSActor->SetVisible(false);
-	mCrosshair->SetVisible(false);
+	// mCrosshair->SetVisible(false);
 	mFollowActor->SetState(Actor::EPaused);
 	mFollowActor->SetVisible(false);
 
@@ -467,7 +494,7 @@ void Game::ChangeCamera(int mode) const {
 		case 1:
 			mFPSActor->SetState(Actor::EActive);
 			mFPSActor->SetVisible(true);
-			mCrosshair->SetVisible(true);
+			// mCrosshair->SetVisible(true);
 			break;
 		case 2:
 			mFollowActor->SetState(Actor::EActive);
@@ -540,4 +567,41 @@ Font* Game::GetFont(const std::string& fileName)
 void Game::PushUI(UIScreen* screen)
 {
 	mUIStack.emplace_back(screen);
+}
+
+void Game::LoadText(const std::string& fileName)
+{
+	// Clear the existing map, if already loaded
+	mText.clear();
+	// Try to open the file
+	std::ifstream file(fileName);
+	if (!file.is_open())
+	{
+		SDL_Log("Text file %s not found", fileName.c_str());
+		return;
+	}
+	// Read the entire file to a string stream
+	std::stringstream fileStream;
+	fileStream << file.rdbuf();
+	std::string contents = fileStream.str();
+	// Open this file in rapidJSON
+	rapidjson::StringStream jsonStr(contents.c_str());
+	rapidjson::Document doc;
+	doc.ParseStream(jsonStr);
+	if (!doc.IsObject())
+	{
+		SDL_Log("Text file %s is not valid JSON", fileName.c_str());
+		return;
+	}
+	// Parse the text map
+	const rapidjson::Value& actions = doc["TextMap"];
+	for (rapidjson::Value::ConstMemberIterator itr = actions.MemberBegin();
+		itr != actions.MemberEnd(); ++itr)
+	{
+		if (itr->name.IsString() && itr->value.IsString())
+		{
+			mText.emplace(itr->name.GetString(), 
+				itr->value.GetString());
+		}
+	}
 }

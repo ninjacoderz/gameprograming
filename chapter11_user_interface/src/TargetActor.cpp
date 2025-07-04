@@ -5,7 +5,7 @@
 #include "BoxComponent.h"
 #include "Mesh.h"
 #include "GameMath.h"
-
+#include "TargetComponent.h"
 TargetActor::TargetActor(Game* game):Actor(game)
 {
     SetRotation(Quaternion(Vector3::UnitZ, GameMath::Pi));
@@ -15,5 +15,5 @@ TargetActor::TargetActor(Game* game):Actor(game)
 
     BoxComponent* bc = new BoxComponent(this);
 	bc->SetObjectBox(mesh->GetBox());
-    
+    new TargetComponent(this);
 };
