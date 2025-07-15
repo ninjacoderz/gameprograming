@@ -53,10 +53,22 @@ bool Texture::Load(const std::string& fileName)
 	
 	SOIL_free_image_data(image);
 	
-	// Enable bilinear filtering
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	// Generate mipmaps for texture
+	glGenerateMipmap(GL_TEXTURE_2D);
+	// Enable linear filtering
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	
+	// Enable anisotropic filtering, if supported
+	if (GLEW_EXT_texture_filter_anisotropic)
+	{
+		// Get the maximum anisotropy value
+		GLfloat largest;
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest);
+		// Enable it
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest);
+	}
+
 	return true;
 }
 
