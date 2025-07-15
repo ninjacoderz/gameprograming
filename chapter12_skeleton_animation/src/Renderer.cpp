@@ -166,13 +166,30 @@ void Renderer::SetLightUniforms(Shader* shader)
 }
 void Renderer::AddMeshComp(MeshComponent* mesh)
 {
-    mMeshComps.emplace_back(mesh);
+	if (mesh->GetIsSkeletal())
+	{
+		SkeletalMeshComponent* sk = static_cast<SkeletalMeshComponent*>(mesh);
+		mSkeletalMeshes.emplace_back(sk);
+	}
+	else
+	{
+		mMeshComps.emplace_back(mesh);
+	}
 }
 
 void Renderer::RemoveMeshComp(MeshComponent* mesh)
 {
-    auto iter = std::find(mMeshComps.begin(), mMeshComps.end(), mesh);
-	mMeshComps.erase(iter);
+    if (mesh->GetIsSkeletal())
+	{
+		SkeletalMeshComponent* sk = static_cast<SkeletalMeshComponent*>(mesh);
+		auto iter = std::find(mSkeletalMeshes.begin(), mSkeletalMeshes.end(), sk);
+		mSkeletalMeshes.erase(iter);
+	}
+	else
+	{
+		auto iter = std::find(mMeshComps.begin(), mMeshComps.end(), mesh);
+		mMeshComps.erase(iter);
+	}
 }
 
 Texture* Renderer::GetTexture(const std::string& fileName)
@@ -240,6 +257,7 @@ bool Renderer::LoadShaders()
 	mProjection = Matrix4::CreatePerspectiveFOV(GameMath::ToRadians(70.0f),
 		mScreenWidth, mScreenHeight, 10.0f, 10000.0f);
 	mSkinnedShader->SetMatrixUniform("uViewProj", mView * mProjection);
+
 	return true;
 }
 

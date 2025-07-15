@@ -50,6 +50,19 @@ void FollowActor::ActorInput(const InputState& code)
         angularSpeed += GameMath::Pi;
     }
 
+    // Did we just start moving?
+	if (!mMoving && !GameMath::NearZero(forwardSpeed))
+	{
+		mMoving = true;
+		mMeshComp->PlayAnimation(GetGame()->GetAnimation("Assets/CatRunSprint.gpanim"), 1.25f);
+	}
+	// Or did we just stop moving?
+	else if (mMoving && GameMath::NearZero(forwardSpeed))
+	{
+		mMoving = false;
+		mMeshComp->PlayAnimation(GetGame()->GetAnimation("Assets/CatActionIdle.gpanim"));
+	}
+
     mMoveComp->SetForwardSpeed(forwardSpeed);
     mMoveComp->SetAngularSpeed(angularSpeed);
 
