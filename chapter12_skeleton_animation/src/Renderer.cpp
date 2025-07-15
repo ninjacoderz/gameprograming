@@ -10,11 +10,13 @@
 #include <algorithm>
 #include "SpriteComponent.h"
 #include "UIScreen.h"
+#include "SkeletalMeshComponent.h"
 
 Renderer::Renderer(Game *game)
     :mGame(game)
     ,mMeshShader(nullptr)
 	,mSpriteShader(nullptr)
+	,mSkinnedShader(nullptr)
 {
     SDL_Log("Renderer initialized");
 }
@@ -108,6 +110,18 @@ void Renderer::Draw()
 	{
 		if (mc->GetVisible())
 			mc->Draw(mMeshShader);
+	}
+	
+	// Draw any skinned meshes now
+	mSkinnedShader->SetActive();
+	mSkinnedShader->SetMatrixUniform("uViewProj", mView * mProjection);
+	SetLightUniforms(mSkinnedShader);
+	for(auto sk: mSkeletalMeshes)
+	{
+		if(sk->GetVisible())
+		{
+			sk->Draw(mSkinnedShader);
+		}
 	}
 
 	// Draw all sprite components
@@ -211,6 +225,21 @@ bool Renderer::LoadShaders()
 	mProjection = Matrix4::CreatePerspectiveFOV(GameMath::ToRadians(70.0f),
 		mScreenWidth, mScreenHeight, 25.0f, 10000.0f);
 	mMeshShader->SetMatrixUniform("uViewProj", mView * mProjection);
+
+	// Create skinned shader
+	mSkinnedShader = new Shader();
+	if (!mSkinnedShader->Load("Shaders/Skinned.vert", "Shaders/Phong.frag"))
+	{
+		return false;
+	}
+
+	mSkinnedShader->SetActive();
+
+	// Set the view-projection matrix
+	mView = Matrix4::CreateLookAt(Vector3::Zero, Vector3::UnitX, Vector3::UnitZ);
+	mProjection = Matrix4::CreatePerspectiveFOV(GameMath::ToRadians(70.0f),
+		mScreenWidth, mScreenHeight, 10.0f, 10000.0f);
+	mSkinnedShader->SetMatrixUniform("uViewProj", mView * mProjection);
 	return true;
 }
 
@@ -275,7 +304,7 @@ void Renderer::CreateSpriteVerts()
 		2, 3, 0
 	};
 
-	mSpriteVerts = new VertexArray(vertices, 4, indices, 6);
+	mSpriteVerts = new VertexArray(vertices, 4, VertexArray::PosNormTex, indices, 6);
 }
 
 void Renderer::UnloadData()

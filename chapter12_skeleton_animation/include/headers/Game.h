@@ -16,7 +16,7 @@ public:
     // Initialize the game
     virtual bool Initialize();
     // Run the game loop
-    void RunLoop();
+    void RunLoop(); 
     // Shutdown the game
     void Shutdown();
     // Add an actor to the game
@@ -38,6 +38,9 @@ public:
     void PushUI(class UIScreen* screen);
     void LoadText(const std::string& fileName);
 
+    class Skeleton* GetSkeleton(const std::string& fileName);
+    class Animation* GetAnimation(const std::string& fileName);
+    
     enum GameState
 	{
 		EGameplay,
@@ -91,4 +94,10 @@ private:
 
     class HUD* mHUD;
     GameState mGameState;
+
+    // Map of loaded skeletons
+	std::unordered_map<std::string, class Skeleton*> mSkeletons;
+    
+    // Map of loaded animations
+	std::unordered_map<std::string, class Animation*> mAnims;
 };

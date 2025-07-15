@@ -53,15 +53,23 @@ private:
     class Shader* mMeshShader;
     // Sprite shader
 	class Shader* mSpriteShader;
+
+    // Skinned shader
+	class Shader* mSkinnedShader;
+
     // Map of meshes loaded
 	std::unordered_map<std::string, class Mesh*> mMeshes;
     // All the sprite components drawn
 	std::vector<class SpriteComponent*> mSprites;
     // Sprite vertex array
 	class VertexArray* mSpriteVerts;
+
     // All mesh components drawn
 	std::vector<class MeshComponent*> mMeshComps;
 
+    // All mesh components drawn
+	std::vector<class SkeletalMeshComponent*> mSkeletalMeshes;
+    
     // Width/height of screen
 	float mScreenWidth;
 	float mScreenHeight;

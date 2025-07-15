@@ -44,6 +44,10 @@ add_executable(GameObjects Main.cpp
     src/PauseMenu.cpp
     src/DialogBox.cpp
     src/TargetComponent.cpp
+    src/BoneTransform.cpp
+    src/Skeleton.cpp
+    src/SkeletalMeshComponent.cpp
+    src/Animation.cpp
 )
 
 target_include_directories(GameObjects PUBLIC

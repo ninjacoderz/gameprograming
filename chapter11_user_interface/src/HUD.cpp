@@ -82,8 +82,6 @@ void HUD::UpdateCrosshair(float deltaTime)
 	PhysWorld::CollisionInfo info;
 	if (mGame->GetPhysWorld()->SegmentCast(l, info))
 	{
-
-         SDL_Log("Update Crosshair mTargetEnemy: %d", info.mActor);
 		// Is this a target?
 		for (auto tc : mTargetComps)
 		{

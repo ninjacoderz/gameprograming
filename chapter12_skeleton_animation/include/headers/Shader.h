@@ -29,6 +29,10 @@ public:
 	// Sets a Vector3 uniform
 	void SetVectorUniform(const char* name, const Vector3& vector);
 	// Tries to compile the specified shader
+
+	// Sets an array of matrix uniforms
+	void SetMatrixUniforms(const char* name, Matrix4* matrices, unsigned count);
+	
 	bool CompileShader(const std::string& fileName,
 					   GLenum shaderType,
 					   GLuint& outShader);

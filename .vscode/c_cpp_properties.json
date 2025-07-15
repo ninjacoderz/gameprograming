@@ -8,18 +8,19 @@
                 "${workspaceFolder}/SDL_ttf/include/SDL3_ttf/",
                 "${workspaceFolder}/soil/include/",
                 "${workspaceFolder}/rapidjson/include/",
-                "${workspaceFolder}/FMODProgrammersAPI/api/studio/inc",
-                "${workspaceFolder}/FMODProgrammersAPI/api/core/inc",
-                "${workspaceFolder}/glew/include",
-                "${workspaceFolder}/chapter11_user_interface/include/headers/"
+                "${workspaceFolder}/FMODProgrammersAPI/api/studio/inc/",
+                "${workspaceFolder}/FMODProgrammersAPI/api/core/inc/",
+                "${workspaceFolder}/glew/include/",
+                "${workspaceFolder}/chapter12_skeleton_animation/include/headers/"
             ],
             "browse": {
                 "path": [
                     "${workspaceFolder}/SDL/**",
                     "${workspaceFolder}/SDL_image/**",
+                    "${workspaceFolder}/rapidjson/include/**",
                     "${workspaceFolder}/FMODProgrammersAPI/api/studio/inc/**",
                     "${workspaceFolder}/FMODProgrammersAPI/api/core/inc/**",
-                    "${workspaceFolder}/chapter8_input_system/**"
+                    "${workspaceFolder}/chapter12_skeleton_animation/**"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             },
@@ -27,8 +28,8 @@
             "macFrameworkPath": [
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
-            "cppStandard": "c++17",
-            "intelliSenseMode": "macos-clang-x64",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "macos-gcc-arm64",
             "compilerPath": "/usr/bin/gcc"
         }
     ],

@@ -104,5 +104,5 @@
         "print": "cpp"
     },
     "makefile.makefilePath": "",
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "enabled"
 }

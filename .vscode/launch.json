@@ -8,14 +8,14 @@
             "name": "C++ Launch (MacOS)",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/chapter11_user_interface/build/GameObjects",
+            "program": "${workspaceFolder}/chapter12_skeleton_animation/build/GameObjects",
             "externalConsole": true,
             "logging": {
                 "moduleLoad": false,
                 "trace": true
             },
             "showDisplayString": true,
-            "cwd": "${workspaceFolder}/chapter11_user_interface/build",
+            "cwd": "${workspaceFolder}/chapter12_skeleton_animation/build",
             "osx": {
                 "MIMode": "lldb"
             },

@@ -29,6 +29,8 @@
 #include <fstream>
 #include <sstream>
 #include "rapidjson/document.h"
+#include "Skeleton.h"
+#include "Animation.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 768
@@ -455,9 +457,30 @@ void Game::LoadData(){
 	a = new TargetActor(this);
 	a->SetPosition(Vector3(1450.0f, 500.0f, 200.0f));
 
-	
+	ChangeCamera(2);
+}
 
-	ChangeCamera(1);
+Skeleton* Game::GetSkeleton(const std::string& fileName)
+{
+	auto iter = mSkeletons.find(fileName);
+	if (iter != mSkeletons.end())
+	{
+		return iter->second;
+	}
+	else
+	{
+		Skeleton* sk = new Skeleton();
+		if (sk->Load(fileName))
+		{
+			mSkeletons.emplace(fileName, sk);
+		}
+		else
+		{
+			delete sk;
+			sk = nullptr;
+		}
+		return sk;
+	}
 }
 
 void Game::UnloadData()
@@ -603,5 +626,28 @@ void Game::LoadText(const std::string& fileName)
 			mText.emplace(itr->name.GetString(), 
 				itr->value.GetString());
 		}
+	}
+}
+
+Animation* Game::GetAnimation(const std::string& fileName)
+{
+	auto iter = mAnims.find(fileName);
+	if (iter != mAnims.end())
+	{
+		return iter->second;
+	}
+	else
+	{
+		Animation* anim = new Animation();
+		if (anim->Load(fileName))
+		{
+			mAnims.emplace(fileName, anim);
+		}
+		else
+		{
+			delete anim;
+			anim = nullptr;
+		}
+		return anim;
 	}
 }
