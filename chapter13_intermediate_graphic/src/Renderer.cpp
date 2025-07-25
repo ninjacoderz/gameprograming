@@ -17,6 +17,7 @@ Renderer::Renderer(Game *game)
     ,mMeshShader(nullptr)
 	,mSpriteShader(nullptr)
 	,mSkinnedShader(nullptr)
+	,mMirrorTexture(nullptr)
 {
     SDL_Log("Renderer initialized");
 }
@@ -75,11 +76,25 @@ bool Renderer::Initialize(float screenWidth, float screenHeight)
 	// Create quad for drawing sprites
 	CreateSpriteVerts();
 
+	// Create render target for mirror
+	if (!CreateMirrorTarget())
+	{
+		SDL_Log("Failed to create render target for mirror.");
+		return false;
+	}
+
     return true;
 }
 
 void Renderer::Shutdown()
 {
+	if (mMirrorTexture != nullptr)
+	{
+		glDeleteFramebuffers(1, &mMirrorBuffer);
+		mMirrorTexture->Unload();
+		delete mMirrorTexture;
+	}
+	
     delete mSpriteVerts;
     mMeshShader->Unload();
 	mSpriteShader->Unload();
@@ -91,38 +106,13 @@ void Renderer::Shutdown()
 
 void Renderer::Draw()
 {
-	// Set the clear color to light grey
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	// Clear the color buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	// Draw to the mirror texture first
+	Draw3DScene(mMirrorBuffer, mMirrorView, mProjection, 0.25f);
 
-	// Draw mesh components
-	// Enable depth buffering/disable alpha blend
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_BLEND);
-    // Set the mesh shader active
-	mMeshShader->SetActive();
-	// Update view-projection matrix
-	mMeshShader->SetMatrixUniform("uViewProj", mView * mProjection);
-	// Update lighting uniforms
-	SetLightUniforms(mMeshShader);
-	for (auto mc : mMeshComps)
-	{
-		if (mc->GetVisible())
-			mc->Draw(mMeshShader);
-	}
+	// Draw the 3D scene to the G-buffer
+	Draw3DScene(0, mView, mProjection, 1.0f, false);
 	
-	// Draw any skinned meshes now
-	mSkinnedShader->SetActive();
-	mSkinnedShader->SetMatrixUniform("uViewProj", mView * mProjection);
-	SetLightUniforms(mSkinnedShader);
-	for(auto sk: mSkeletalMeshes)
-	{
-		if(sk->GetVisible())
-		{
-			sk->Draw(mSkinnedShader);
-		}
-	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// Draw all sprite components
 	// Disable depth buffering
@@ -137,20 +127,26 @@ void Renderer::Draw()
 	mSpriteVerts->SetActive();
 	for (auto sprite : mSprites)
 	{
-		sprite->Draw(mSpriteShader);
-	}
-
-	for (auto ui: mGame->GetUIStack()) {
-		ui->Draw(mSpriteShader);
+		if (sprite->GetVisible())
+		{
+			sprite->Draw(mSpriteShader);
+		}
 	}
 	
+	// Draw any UI screens
+	for (auto ui : mGame->GetUIStack())
+	{
+		ui->Draw(mSpriteShader);
+	}
+
 	// Swap the buffers
 	SDL_GL_SwapWindow(mWindow);
+
 }
 
-void Renderer::SetLightUniforms(Shader* shader)
+void Renderer::SetLightUniforms(Shader* shader, const Matrix4& view)
 {
-    Matrix4 invView = mView;
+    Matrix4 invView = view;
     invView.Invert();
     // Set the ambient light
     shader->SetVectorUniform("uCameraPos", invView.GetTranslation());
@@ -368,4 +364,88 @@ void Renderer::GetScreenDirection(Vector3& outStart, Vector3& outDir) const
 	// Get direction vector
 	outDir = end - outStart;
 	outDir.Normalize();
+}
+
+
+bool Renderer::CreateMirrorTarget() 
+{
+	int width = static_cast<int>(mScreenWidth) / 4;
+	int height = static_cast<int>(mScreenHeight) / 4;
+
+	glGenFramebuffers(1, &mMirrorBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER, mMirrorBuffer);
+
+	mMirrorTexture = new Texture();
+	mMirrorTexture->CreateForRendering(width, height, GL_RGB);
+	GLuint depthBuffer;
+	glGenRenderbuffers(1, &depthBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer);
+
+	// Attach mirror texture as the output target for the frame buffer
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, mMirrorTexture->GetTextureID(), 0);
+
+	// Set the list of buffers to draw to for this frame buffer
+	GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+	glDrawBuffers(1, drawBuffers);
+
+	// Make sure everything worked
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		// If it didn't work, delete the framebuffer,
+		// unload/delete the texture and return false
+		glDeleteFramebuffers(1, &mMirrorBuffer);
+		mMirrorTexture->Unload();
+		delete mMirrorTexture;
+		mMirrorTexture = nullptr;
+		return false;
+	}
+	return true;
+
+}
+
+void Renderer::Draw3DScene ( unsigned int framebuffer, const Matrix4& view, const Matrix4& proj
+							, float viewPortScale, bool lit ) 
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glViewport(0, 0, 
+		static_cast<int>(mScreenWidth * viewPortScale),
+		static_cast<int>(mScreenHeight * viewPortScale)
+	);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glDepthMask(GL_TRUE);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+
+	mMeshShader->SetActive();
+	mMeshShader->SetMatrixUniform("uViewProj", view * proj);
+	
+	if(lit)
+	{
+		SetLightUniforms(mMeshShader, view);
+	}
+
+	for(auto mc: mMeshComps) {
+		if(mc->GetVisible()) {
+			mc->Draw(mMeshShader);
+		}
+	}
+
+	mSkinnedShader->SetActive();
+	mSkinnedShader->SetMatrixUniform("uViewProj", view * proj);
+
+	if(lit)
+	{
+		SetLightUniforms(mSkinnedShader, view);
+	}
+	for (auto sk : mSkeletalMeshes)
+	{
+		if (sk->GetVisible())
+		{
+			sk->Draw(mSkinnedShader);
+		}
+	}
 }

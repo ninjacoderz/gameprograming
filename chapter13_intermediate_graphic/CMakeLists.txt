@@ -48,6 +48,7 @@ add_executable(GameObjects Main.cpp
     src/Skeleton.cpp
     src/SkeletalMeshComponent.cpp
     src/Animation.cpp
+    src/MirrorCamera.cpp
 )
 
 target_include_directories(GameObjects PUBLIC

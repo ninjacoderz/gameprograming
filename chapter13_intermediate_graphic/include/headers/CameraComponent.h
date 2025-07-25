@@ -1,7 +1,7 @@
 //
 // Created by Binh Nguyen Thanh on 24/05/2025.
 //
-
+#pragma once
 #include "Component.h"
 #include "GameMath.h"
 

@@ -32,7 +32,7 @@ public:
     void RemoveMeshComp(class MeshComponent* mesh);
     void SetViewMatrix(const Matrix4& view) { mView = view; }
     void SetProjectionMatrix(const Matrix4& proj) { mProjection = proj; }
-    void SetLightUniforms(class Shader* shader);
+    void SetLightUniforms(class Shader* shader, const Matrix4& view);
     void SetAmbientLight(const Vector3& ambient) { mAmbientLight = ambient; }
     DirectionalLight& GetDirectionalLight() { return mDirLight; }
 	SDL_Window* getWindow() const { return mWindow; }
@@ -42,6 +42,11 @@ public:
     void GetScreenDirection(Vector3& outStart, Vector3& outDir) const;
     float GetScreenWidth() const { return mScreenWidth; }
 	float GetScreenHeight() const { return mScreenHeight; }
+
+    bool CreateMirrorTarget();
+    void SetMirrorView(const Matrix4& view) { mMirrorView = view; }
+    class Texture* GetMirrorTexture() { return mMirrorTexture; }
+    
 private:
     bool LoadShaders();
     void CreateSpriteVerts();
@@ -86,4 +91,13 @@ private:
     // Lighting data
 	Vector3 mAmbientLight;
 	DirectionalLight mDirLight;
+
+    // Framebuffer object for the mirror
+    unsigned int mMirrorBuffer;
+    // Texture for the mirror
+    class Texture*  mMirrorTexture;
+    Matrix4 mMirrorView;
+
+    void Draw3DScene(unsigned int framebuffer, const Matrix4& view, const Matrix4& proj, 
+		float viewPortScale = 1.0f, bool lit = true);
 };

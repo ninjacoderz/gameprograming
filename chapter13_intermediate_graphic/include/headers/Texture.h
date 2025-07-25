@@ -15,6 +15,10 @@ public:
 	int GetHeight() const { return mHeight; }
 
 	void CreateFromSurface(struct SDL_Surface* surface);
+	void CreateForRendering(int width, int height, unsigned int format);
+
+	unsigned int GetTextureID() const { return mTextureID; }
+	
 private:
 	// OpenGL ID of this texture
 	unsigned int mTextureID;
@@ -22,3 +26,4 @@ private:
 	int mWidth;
 	int mHeight;
 };
+ 

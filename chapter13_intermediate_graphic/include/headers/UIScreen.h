@@ -55,7 +55,7 @@ class UIScreen
     protected:
         
         void DrawTexture( class Shader* shader, class Texture* texture, 
-                            const Vector2& offset = Vector2::Zero, float scale = 1.0f);
+                            const Vector2& offset = Vector2::Zero, float scale = 1.0f, bool flipY = false);
         
         class Game* mGame;
         class Font* mFont;

@@ -23,6 +23,7 @@ public:
 	int GetTexHeight() const { return mTexHeight; }
 	int GetTexWidth() const { return mTexWidth; }
 	void SetVisible(bool visible) { mVisible = visible; }
+	bool GetVisible() const { return mVisible; }
 protected:
 	class Texture* mTexture;
 	int mDrawOrder;

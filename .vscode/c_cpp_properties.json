@@ -11,7 +11,7 @@
                 "${workspaceFolder}/FMODProgrammersAPI/api/studio/inc/",
                 "${workspaceFolder}/FMODProgrammersAPI/api/core/inc/",
                 "${workspaceFolder}/glew/include/",
-                "${workspaceFolder}/chapter12_skeleton_animation/include/headers/"
+                "${workspaceFolder}/chapter13_intermediate_graphic/include/headers/"
             ],
             "browse": {
                 "path": [
@@ -20,7 +20,7 @@
                     "${workspaceFolder}/rapidjson/include/**",
                     "${workspaceFolder}/FMODProgrammersAPI/api/studio/inc/**",
                     "${workspaceFolder}/FMODProgrammersAPI/api/core/inc/**",
-                    "${workspaceFolder}/chapter12_skeleton_animation/**"
+                    "${workspaceFolder}/chapter13_intermediate_graphic/**"
                 ],
                 "limitSymbolsToIncludedHeaders": true
             },

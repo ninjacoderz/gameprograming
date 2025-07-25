@@ -54,6 +54,9 @@ void HUD::Draw( class Shader* shader) {
 
     // Health bar
 	DrawTexture(shader, mHealthBar, Vector2(-350.0f, -350.0f));
+
+	Texture* mirror = mGame->GetRenderer()->GetMirrorTexture();
+	DrawTexture(shader, mirror, Vector2(350.0f, -250.0f), 1.0f, true);
 }
 
 void HUD::AddTargetComponent(TargetComponent* tc)
