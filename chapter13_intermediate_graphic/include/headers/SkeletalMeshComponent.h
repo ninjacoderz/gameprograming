@@ -1,7 +1,7 @@
 #pragma once
 #include "MeshComponent.h"
 #include "MatrixPalette.h"
-
+#include "SkeletalMeshComponent.h"
 class SkeletalMeshComponent : public MeshComponent
 {
 public:
