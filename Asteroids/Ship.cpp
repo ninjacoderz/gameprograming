@@ -35,8 +35,9 @@ void Ship::UpdateActor(float deltaTime)
 	mLaserCooldown -= deltaTime;
 }
 
-void Ship::ActorInput(const SDL_Scancode keyState)
+void Ship::ActorInput(const SDL_Event& event)
 {
+	const SDL_Scancode keyState = event.key.scancode;
 	if (keyState == SDL_SCANCODE_SPACE && mLaserCooldown <= 0.0f)
 	{
 		// Create a laser and set its position/rotation to mine

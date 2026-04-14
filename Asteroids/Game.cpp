@@ -57,10 +57,18 @@ bool Game::Initialize()
 
 void Game::RunLoop()
 {
+	Uint64 lastTick = SDL_GetPerformanceCounter();
+
 	while (mIsRunning)
 	{
 		ProcessInput();
-		UpdateGame();
+
+		Uint64 currentTick  = SDL_GetPerformanceCounter();
+		float deltaTime = static_cast<float>(currentTick - lastTick) /
+								static_cast<float>(SDL_GetPerformanceFrequency());
+		lastTick = currentTick;
+
+		UpdateGame(deltaTime);
 		GenerateOutput();
 	}
 }
@@ -75,33 +83,25 @@ void Game::ProcessInput()
 				mIsRunning = false;
 				break;
 		}
-	}
-	
-	const bool keyState = SDL_GetKeyboardState(NULL);
-	if (keyState &&  event.key.scancode == SDL_SCANCODE_ESCAPE)
-	{
-		mIsRunning = false;
+
+		const bool keyState = SDL_GetKeyboardState(NULL);
+		if (keyState &&  event.key.scancode == SDL_SCANCODE_ESCAPE)
+		{
+			mIsRunning = false;
+		}
+
+		mUpdatingActors = true;
+		for (auto actor : mActors)
+		{
+			actor->ProcessInput(event);
+		}
+		mUpdatingActors = false;
 	}
 
-	mUpdatingActors = true;
-	for (auto actor : mActors)
-	{
-		actor->ProcessInput(event.key.scancode);
-	}
-	mUpdatingActors = false;
 }
 
-void Game::UpdateGame()
+void Game::UpdateGame(float deltaTime)
 {
-	// Compute delta time
-
-	float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
-	if (deltaTime > 0.05f)
-	{
-		deltaTime = 0.05f;
-	}
-	mTicksCount = SDL_GetTicks();
-
 	// Update all actors
 	mUpdatingActors = true;
 	for (auto actor : mActors)

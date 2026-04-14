@@ -19,10 +19,11 @@ InputComponent::InputComponent(class Actor* owner)
 	
 }
 
-void InputComponent::ProcessInput(const SDL_Scancode keyState)
+void InputComponent::ProcessInput(const SDL_Event& event)
 {
 	// Calculate forward speed for MoveComponent
 	float forwardSpeed = 0.0f;
+	const SDL_Scancode keyState = event.key.scancode;
 	if (keyState == mForwardKey)
 	{
 		forwardSpeed += mMaxForwardSpeed;

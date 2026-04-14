@@ -11,6 +11,7 @@
 #include "Math.h"
 #include <cstdint>
 
+#include "SDL3/SDL_events.h"
 #include "SDL3/SDL_scancode.h"
 
 class Actor
@@ -34,9 +35,9 @@ public:
 	virtual void UpdateActor(float deltaTime);
 
 	// ProcessInput function called from Game (not overridable)
-	void ProcessInput(const SDL_Scancode keyState);
+	void ProcessInput(const SDL_Event &event);
 	// Any actor-specific input code (overridable)
-	virtual void ActorInput(const SDL_Scancode keyState);
+	virtual void ActorInput(const SDL_Event& event);
 
 	// Getters/setters
 	const Vector2& GetPosition() const { return mPosition; }

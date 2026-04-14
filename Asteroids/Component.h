@@ -9,6 +9,7 @@
 #pragma once
 #include <cstdint>
 
+#include "SDL3/SDL_events.h"
 #include "SDL3/SDL_scancode.h"
 
 class Component
@@ -22,7 +23,7 @@ public:
 	// Update this component by delta time
 	virtual void Update(float deltaTime);
 	// Process input for this component
-	virtual void ProcessInput(const SDL_Scancode keyState) {}
+	virtual void ProcessInput(const SDL_Event& event) {}
 
 	int GetUpdateOrder() const { return mUpdateOrder; }
 protected:

@@ -53,21 +53,21 @@ void Actor::UpdateActor(float deltaTime)
 {
 }
 
-void Actor::ProcessInput(const SDL_Scancode keyState)
+void Actor::ProcessInput(const SDL_Event& event)
 {
 	if (mState == EActive)
 	{
 		// First process input for components
 		for (auto comp : mComponents)
 		{
-			comp->ProcessInput(keyState);
+			comp->ProcessInput(event);
 		}
 
-		ActorInput(keyState);
+		ActorInput(event);
 	}
 }
 
-void Actor::ActorInput(const SDL_Scancode keyState)
+void Actor::ActorInput(const SDL_Event& event)
 {
 }
 

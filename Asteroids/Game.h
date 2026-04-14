@@ -34,7 +34,7 @@ public:
 	std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
 private:
 	void ProcessInput();
-	void UpdateGame();
+	void UpdateGame(float deltaTime);
 	void GenerateOutput();
 	void LoadData();
 	void UnloadData();

@@ -14,7 +14,7 @@ public:
 	Ship(class Game* game);
 
 	void UpdateActor(float deltaTime) override;
-	void ActorInput(const SDL_Scancode keyState) override;
+	void ActorInput(const SDL_Event& event) override;
 private:
 	float mLaserCooldown;
 };
