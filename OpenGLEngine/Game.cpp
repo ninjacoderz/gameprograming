@@ -1,0 +1,296 @@
+// ----------------------------------------------------------------
+// From Game Programming in C++ by Sanjay Madhav
+// Copyright (C) 2017 Sanjay Madhav. All rights reserved.
+// 
+// Released under the BSD License
+// See LICENSE in root directory for full details.
+// ----------------------------------------------------------------
+
+#include <SDL3_image/SDL_image.h>
+#include "Game.h"
+#include <algorithm>
+#include "Actor.h"
+#include "SpriteComponent.h"
+#include "Ship.h"
+#include "Asteroid.h"
+#include "Random.h"
+#include <GL/glew.h>
+
+Game::Game()
+:mWindow(nullptr)
+,mIsRunning(true)
+,mUpdatingActors(false)
+{
+	
+}
+
+bool Game::Initialize()
+{
+	if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_AUDIO) != true)
+	{
+		SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+		return false;
+	}
+
+	// Setup OpenGL Window
+	mWindow = SDL_CreateWindow("Game Programming in C++ (Chapter 5)", 1024, 768, SDL_WINDOW_OPENGL);
+	if (!mWindow)
+	{
+		SDL_Log("Failed to create window: %s", SDL_GetError());
+		return false;
+	}
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+
+	mContext = SDL_GL_CreateContext(mWindow);
+	glewExperimental = GL_TRUE;
+
+	if (glewInit() != GLEW_OK) {
+		SDL_Log("Failed to initialize GLEW");
+		return false;
+	}
+
+	glGetError();
+
+	Random::Init();
+
+	LoadData();
+
+	mTicksCount = 0;
+	
+	return true;
+}
+
+void Game::RunLoop()
+{
+
+	while (mIsRunning)
+	{
+		ProcessInput();
+		UpdateGame();
+		GenerateOutput();
+	}
+}
+
+void Game::ProcessInput()
+{
+	SDL_Event event;
+	while (SDL_PollEvent(&event))
+	{
+		switch (event.type) {
+			case SDL_EVENT_QUIT:
+				mIsRunning = false;
+				break;
+		}
+
+		const bool keyState = SDL_GetKeyboardState(NULL);
+		if (keyState &&  event.key.scancode == SDL_SCANCODE_ESCAPE)
+		{
+			mIsRunning = false;
+		}
+
+		mUpdatingActors = true;
+		for (auto actor : mActors)
+		{
+			actor->ProcessInput(event);
+		}
+		mUpdatingActors = false;
+	}
+
+}
+
+void Game::UpdateGame()
+{
+	const Uint64 currentTick  = SDL_GetPerformanceCounter();
+	float deltaTime = static_cast<float>(currentTick - mTicksCount) /
+							static_cast<float>(SDL_GetPerformanceFrequency());
+	mTicksCount = currentTick;
+
+	// Update all actors
+	mUpdatingActors = true;
+	for (auto actor : mActors)
+	{
+		actor->Update(deltaTime);
+	}
+	mUpdatingActors = false;
+
+	// Move any pending actors to mActors
+	for (auto pending : mPendingActors)
+	{
+		mActors.emplace_back(pending);
+	}
+	mPendingActors.clear();
+
+	// Add any dead actors to a temp vector
+	std::vector<Actor*> deadActors;
+	for (auto actor : mActors)
+	{
+		if (actor->GetState() == Actor::EDead)
+		{
+			deadActors.emplace_back(actor);
+		}
+	}
+
+	// Delete dead actors (which removes them from mActors)
+	for (auto actor : deadActors)
+	{
+		delete actor;
+	}
+}
+
+void Game::GenerateOutput()
+{
+	glClearColor(0.86f, 0.86f, 0.86f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+
+	SDL_GL_SwapWindow(mWindow);
+}
+
+void Game::LoadData()
+{
+	// Create player's ship
+	mShip = new Ship(this);
+	mShip->SetPosition(Vector2(512.0f, 384.0f));
+	mShip->SetRotation(Math::PiOver2);
+
+	// Create asteroids
+	const int numAsteroids = 20;
+	for (int i = 0; i < numAsteroids; i++)
+	{
+		new Asteroid(this);
+	}
+}
+
+void Game::UnloadData()
+{
+	// Delete actors
+	// Because ~Actor calls RemoveActor, have to use a different style loop
+	while (!mActors.empty())
+	{
+		delete mActors.back();
+	}
+
+	// Destroy textures
+	for (auto i : mTextures)
+	{
+		SDL_DestroyTexture(i.second);
+	}
+	mTextures.clear();
+}
+
+SDL_Texture* Game::GetTexture(const std::string& fileName)
+{
+	SDL_Texture* tex = nullptr;
+	// Is the texture already in the map?
+	auto iter = mTextures.find(fileName);
+	if (iter != mTextures.end())
+	{
+		tex = iter->second;
+	}
+	else
+	{
+		// Load from file
+		SDL_Surface* surf = IMG_Load(fileName.c_str());
+		if (!surf)
+		{
+			SDL_Log("Failed to load texture file %s", fileName.c_str());
+			return nullptr;
+		}
+
+		mTextures.emplace(fileName.c_str(), tex);
+	}
+	return tex;
+}
+
+void Game::AddAsteroid(Asteroid* ast)
+{
+	mAsteroids.emplace_back(ast);
+}
+
+void Game::RemoveAsteroid(Asteroid* ast)
+{
+	auto iter = std::find(mAsteroids.begin(),
+		mAsteroids.end(), ast);
+	if (iter != mAsteroids.end())
+	{
+		mAsteroids.erase(iter);
+	}
+}
+
+void Game::Shutdown()
+{
+	UnloadData();
+	SDL_DestroyWindow(mWindow);
+	SDL_GL_DestroyContext(mContext);
+	SDL_Quit();
+}
+
+void Game::AddActor(Actor* actor)
+{
+	// If we're updating actors, need to add to pending
+	if (mUpdatingActors)
+	{
+		mPendingActors.emplace_back(actor);
+	}
+	else
+	{
+		mActors.emplace_back(actor);
+	}
+}
+
+void Game::RemoveActor(Actor* actor)
+{
+	// Is it in pending actors?
+	auto iter = std::find(mPendingActors.begin(), mPendingActors.end(), actor);
+	if (iter != mPendingActors.end())
+	{
+		// Swap to end of vector and pop off (avoid erase copies)
+		std::iter_swap(iter, mPendingActors.end() - 1);
+		mPendingActors.pop_back();
+	}
+
+	// Is it in actors?
+	iter = std::find(mActors.begin(), mActors.end(), actor);
+	if (iter != mActors.end())
+	{
+		// Swap to end of vector and pop off (avoid erase copies)
+		std::iter_swap(iter, mActors.end() - 1);
+		mActors.pop_back();
+	}
+}
+
+void Game::AddSprite(SpriteComponent* sprite)
+{
+	// Find the insertion point in the sorted vector
+	// (The first element with a higher draw order than me)
+	int myDrawOrder = sprite->GetDrawOrder();
+	auto iter = mSprites.begin();
+	for ( ;
+		iter != mSprites.end();
+		++iter)
+	{
+		if (myDrawOrder < (*iter)->GetDrawOrder())
+		{
+			break;
+		}
+	}
+
+	// Inserts element before position of iterator
+	mSprites.insert(iter, sprite);
+}
+
+void Game::RemoveSprite(SpriteComponent* sprite)
+{
+	// (We can't swap because it ruins ordering)
+	auto iter = std::find(mSprites.begin(), mSprites.end(), sprite);
+	mSprites.erase(iter);
+}
