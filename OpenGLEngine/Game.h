@@ -12,6 +12,9 @@
 #include <string>
 #include <vector>
 
+#include "Shader.h"
+#include "VertexArray.h"
+
 class Game
 {
 public:
@@ -32,21 +35,22 @@ public:
 	void AddAsteroid(class Asteroid* ast);
 	void RemoveAsteroid(class Asteroid* ast);
 	std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
+
+	bool LoadShaders();
 private:
 	void ProcessInput();
 	void UpdateGame();
 	void GenerateOutput();
 	void LoadData();
 	void UnloadData();
-	
+	void InitSpriteVerts();
+
 	// Map of textures loaded
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
-
 	// All the actors in the game
 	std::vector<class Actor*> mActors;
 	// Any pending actors
 	std::vector<class Actor*> mPendingActors;
-
 	// All the sprite components drawn
 	std::vector<class SpriteComponent*> mSprites;
 	SDL_Window* mWindow;
@@ -60,4 +64,7 @@ private:
 	std::vector<class Asteroid*> mAsteroids;
 
 	SDL_GLContext mContext;
+
+	VertexArray* mSpriteVerts;
+	Shader* mSpriteShader;
 };

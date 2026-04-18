@@ -59,9 +59,10 @@ bool Game::Initialize()
 	}
 
 	glGetError();
+	InitSpriteVerts();
+	LoadShaders();
 
 	Random::Init();
-
 	LoadData();
 
 	mTicksCount = 0;
@@ -78,6 +79,15 @@ void Game::RunLoop()
 		UpdateGame();
 		GenerateOutput();
 	}
+}
+
+bool Game::LoadShaders() {
+	mSpriteShader = new Shader();
+	if ( !mSpriteShader -> Load("Shaders/Basic.vert", "Shaders/Basic.frag") ) {
+		return false;
+	}
+	mSpriteShader->SetActive();
+	return true;
 }
 
 void Game::ProcessInput()
@@ -151,6 +161,14 @@ void Game::GenerateOutput()
 	glClearColor(0.86f, 0.86f, 0.86f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	// TODO: Draw the scene
+	mSpriteShader->SetActive();
+	mSpriteVerts->SetActive();
+
+	for (auto sprite : mSprites)
+	{
+		sprite->Draw(mSpriteShader);
+	}
 
 	SDL_GL_SwapWindow(mWindow);
 }
@@ -185,6 +203,22 @@ void Game::UnloadData()
 		SDL_DestroyTexture(i.second);
 	}
 	mTextures.clear();
+}
+
+void Game::InitSpriteVerts() {
+	float vertexBuffer[] = {
+		-0.5f, 0.5f, 0.0f, // vertex 0
+		0.5f, 0.5f, 0.0f, // vertex 1
+		0.5f, -0.5f, 0.0f, // vertex 2
+		-0.5f, -0.5f, 0.0f // vertex 3
+	};
+
+	const unsigned int indexBuffer[6] = {
+		0, 1, 2,
+		2, 3, 0
+	};
+
+	mSpriteVerts = new VertexArray(vertexBuffer, 4, indexBuffer, 6);
 }
 
 SDL_Texture* Game::GetTexture(const std::string& fileName)

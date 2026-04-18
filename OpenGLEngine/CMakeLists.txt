@@ -34,6 +34,8 @@ add_executable(Asteroid
         Random.cpp
         Ship.cpp
         SpriteComponent.cpp
+        VertexArray.cpp
+        Shader.cpp
 )
 set(SDLTTF_VENDORED ON)
 set(VENDOR_DIR "${PROJECT_SOURCE_DIR}/vendor")
