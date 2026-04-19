@@ -37,7 +37,6 @@ add_executable(Asteroid
         VertexArray.cpp
         Shader.cpp
         Texture.cpp
-        Texture.h
 )
 set(SDLTTF_VENDORED ON)
 set(VENDOR_DIR "${PROJECT_SOURCE_DIR}/vendor")
@@ -45,6 +44,7 @@ set(VENDOR_DIR "${PROJECT_SOURCE_DIR}/vendor")
 target_include_directories(Asteroid
         PRIVATE ${PROJECT_SOURCE_DIR}/src
         PRIVATE ${VENDOR_DIR}/glew/include
+        PRIVATE ${VENDOR_DIR}/SOIL/includes
 )
 
 if(APPLE)
@@ -59,14 +59,19 @@ elseif(UNIX)
           BUILD_WITH_INSTALL_RPATH TRUE
   )
 endif()
-
+if (APPLE)
+  find_library(COREFOUNDATION CoreFoundation)
+endif()
 add_subdirectory(${VENDOR_DIR}/SDL)
 add_subdirectory(${VENDOR_DIR}/SDL_image)
 add_subdirectory(${VENDOR_DIR}/SDL_ttf)
+add_subdirectory(${VENDOR_DIR}/SOIL)
 add_subdirectory(${VENDOR_DIR}/glew/build/cmake)
 
 target_link_libraries(Asteroid
         SDL3::SDL3
         SDL3_image::SDL3_image
         glew_s
+        soil
+        ${COREFOUNDATION}
 )
