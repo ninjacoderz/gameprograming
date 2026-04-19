@@ -59,20 +59,22 @@ bool Game::Initialize()
 	}
 
 	glGetError();
-	InitSpriteVerts();
-	LoadShaders();
-
-	Random::Init();
 	LoadData();
 
-	mTicksCount = 0;
-	
+	InitSpriteVerts();
+	SetSpriteVertsActive();
+	if (LoadShaders())
+		SetSpriteShaderActive();
+
+
+	Random::Init();
+
+	mTicksCount =  SDL_GetTicks();
 	return true;
 }
 
 void Game::RunLoop()
 {
-
 	while (mIsRunning)
 	{
 		ProcessInput();
@@ -83,10 +85,13 @@ void Game::RunLoop()
 
 bool Game::LoadShaders() {
 	mSpriteShader = new Shader();
-	if ( !mSpriteShader -> Load("Shaders/Basic.vert", "Shaders/Basic.frag") ) {
+	if ( !mSpriteShader->Load("Shaders/Transform.vert", "Shaders/Basic.frag") ) {
 		return false;
 	}
 	mSpriteShader->SetActive();
+	Matrix4 viewProj = Matrix4::CreateSimpleViewProj(1024.f, 768.f);
+	mSpriteShader->SetMatrixUniform("uViewProj", viewProj);
+
 	return true;
 }
 
@@ -119,10 +124,7 @@ void Game::ProcessInput()
 
 void Game::UpdateGame()
 {
-	const Uint64 currentTick  = SDL_GetPerformanceCounter();
-	float deltaTime = static_cast<float>(currentTick - mTicksCount) /
-							static_cast<float>(SDL_GetPerformanceFrequency());
-	mTicksCount = currentTick;
+	float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
 
 	// Update all actors
 	mUpdatingActors = true;
@@ -135,6 +137,7 @@ void Game::UpdateGame()
 	// Move any pending actors to mActors
 	for (auto pending : mPendingActors)
 	{
+		pending->ComputeWorldTransform();
 		mActors.emplace_back(pending);
 	}
 	mPendingActors.clear();
@@ -154,6 +157,8 @@ void Game::UpdateGame()
 	{
 		delete actor;
 	}
+
+	mTicksCount = SDL_GetTicks();
 }
 
 void Game::GenerateOutput()
@@ -161,11 +166,13 @@ void Game::GenerateOutput()
 	glClearColor(0.86f, 0.86f, 0.86f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// TODO: Draw the scene
+	// Draw all sprite components
+	// Enable alpha blending on the color buffer
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	mSpriteShader->SetActive();
-	mSpriteVerts->SetActive();
 
-	for (auto sprite : mSprites)
+	for (SpriteComponent* sprite : mSprites)
 	{
 		sprite->Draw(mSpriteShader);
 	}
@@ -177,8 +184,7 @@ void Game::LoadData()
 {
 	// Create player's ship
 	mShip = new Ship(this);
-	mShip->SetPosition(Vector2(512.0f, 384.0f));
-	mShip->SetRotation(Math::PiOver2);
+	mShip->SetPosition(Vector2(0, 0));
 
 	// Create asteroids
 	const int numAsteroids = 20;
@@ -203,6 +209,10 @@ void Game::UnloadData()
 		SDL_DestroyTexture(i.second);
 	}
 	mTextures.clear();
+
+	// Destroy shader
+	delete mSpriteShader;
+	delete mSpriteVertexArray;
 }
 
 void Game::InitSpriteVerts() {
@@ -218,9 +228,16 @@ void Game::InitSpriteVerts() {
 		2, 3, 0
 	};
 
-	mSpriteVerts = new VertexArray(vertexBuffer, 4, indexBuffer, 6);
+	mSpriteVertexArray = new VertexArray(vertexBuffer, 4, indexBuffer, 6);
 }
 
+void Game::SetSpriteVertsActive() {
+	mSpriteVertexArray->SetActive();
+}
+
+void Game::SetSpriteShaderActive() {
+	mSpriteShader->SetActive();
+}
 SDL_Texture* Game::GetTexture(const std::string& fileName)
 {
 	SDL_Texture* tex = nullptr;
@@ -239,6 +256,10 @@ SDL_Texture* Game::GetTexture(const std::string& fileName)
 			SDL_Log("Failed to load texture file %s", fileName.c_str());
 			return nullptr;
 		}
+
+		// tex =
+
+		SDL_DestroySurface(surf);
 
 		mTextures.emplace(fileName.c_str(), tex);
 	}
@@ -263,6 +284,7 @@ void Game::RemoveAsteroid(Asteroid* ast)
 void Game::Shutdown()
 {
 	UnloadData();
+
 	SDL_DestroyWindow(mWindow);
 	SDL_GL_DestroyContext(mContext);
 	SDL_Quit();

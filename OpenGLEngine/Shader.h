@@ -6,6 +6,8 @@
 #define _SHADER_H
 #include <GL/glew.h>
 
+#include "Math.h"
+
 
 class Shader {
 public:
@@ -15,6 +17,8 @@ public:
     bool Load(const char* vertexPath, const char* fragmentPath);
     void Unload();
     void SetActive();
+
+    void SetMatrixUniform(const char* name, const Matrix4& matrix);
 private:
     bool CompileShader(const char* fileName, GLuint shaderType, GLuint& outShader);
     bool IsCompiled(GLuint shader);

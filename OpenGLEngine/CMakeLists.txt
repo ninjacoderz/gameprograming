@@ -36,6 +36,8 @@ add_executable(Asteroid
         SpriteComponent.cpp
         VertexArray.cpp
         Shader.cpp
+        Texture.cpp
+        Texture.h
 )
 set(SDLTTF_VENDORED ON)
 set(VENDOR_DIR "${PROJECT_SOURCE_DIR}/vendor")

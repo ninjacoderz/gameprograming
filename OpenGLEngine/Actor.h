@@ -41,23 +41,25 @@ public:
 
 	// Getters/setters
 	const Vector2& GetPosition() const { return mPosition; }
-	void SetPosition(const Vector2& pos) { mPosition = pos; }
+	void SetPosition(const Vector2& pos) { mPosition = pos; mRecomputeWorldTransform = true;}
 	float GetScale() const { return mScale; }
-	void SetScale(float scale) { mScale = scale; }
+	void SetScale(float scale) { mScale = scale; mRecomputeWorldTransform = true;}
 	float GetRotation() const { return mRotation; }
-	void SetRotation(float rotation) { mRotation = rotation; }
+	void SetRotation(float rotation) { mRotation = rotation; mRecomputeWorldTransform = true;}
 
 	Vector2 GetForward() const { return Vector2(Math::Cos(mRotation), -Math::Sin(mRotation)); }
 
 	State GetState() const { return mState; }
 	void SetState(State state) { mState = state; }
 
-	class Game* GetGame() { return mGame; }
-
+	Game* GetGame() const { return mGame; }
 
 	// Add/remove components
 	void AddComponent(class Component* component);
 	void RemoveComponent(class Component* component);
+
+	void ComputeWorldTransform();
+	Matrix4 GetWorldTransform() const { return mWorldTransform; }
 private:
 	// Actor's state
 	State mState;
@@ -68,5 +70,9 @@ private:
 	float mRotation;
 
 	std::vector<class Component*> mComponents;
-	class Game* mGame;
+	Game* mGame;
+
+	Matrix4 mWorldTransform;
+	bool mRecomputeWorldTransform;
+
 };

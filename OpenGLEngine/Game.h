@@ -45,6 +45,10 @@ private:
 	void UnloadData();
 	void InitSpriteVerts();
 
+	void SetSpriteVertsActive();
+
+	void SetSpriteShaderActive();
+
 	// Map of textures loaded
 	std::unordered_map<std::string, SDL_Texture*> mTextures;
 	// All the actors in the game
@@ -65,6 +69,6 @@ private:
 
 	SDL_GLContext mContext;
 
-	VertexArray* mSpriteVerts;
+	VertexArray* mSpriteVertexArray;
 	Shader* mSpriteShader;
 };

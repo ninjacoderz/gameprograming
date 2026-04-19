@@ -14,7 +14,6 @@ Shader::Shader() : mVertexShader(0), mFragmentShader(0), mShaderProgram(0) {
 
 Shader::~Shader()
 {
-
 }
 bool Shader::Load(const char *vertexPath, const char *fragmentPath) {
     if (!CompileShader(vertexPath, GL_VERTEX_SHADER, mVertexShader)||
@@ -41,6 +40,17 @@ void Shader::Unload() {
 
 void Shader::SetActive() {
     glUseProgram(mShaderProgram);
+}
+
+void Shader::SetMatrixUniform(const char *name, const Matrix4 &matrix) {
+    GLint location = glGetUniformLocation(mShaderProgram, name);
+
+    glUniformMatrix4fv(
+        location,
+        1,
+        GL_TRUE,
+        matrix.GetAsFloatPtr()
+    );
 }
 
 bool Shader::CompileShader(const char *fileName, GLuint shaderType, GLuint& outShader){
