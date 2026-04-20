@@ -29,13 +29,13 @@ void SpriteComponent::Draw(Shader* shader)
 {
 	// Scale the quad by the width/height of texture
 	Matrix4 scaleMat = Matrix4::CreateScale(
-		static_cast<float>(64), //mTexWidth
-		static_cast<float>(64), //mTexHeight
+		static_cast<float>(mTexWidth), //mTexWidth
+		static_cast<float>(mTexHeight), //mTexHeight
 		1.0f);
 
 	Matrix4 world = scaleMat * mOwner->GetWorldTransform();
 	shader->SetMatrixUniform("uWorldTransform", world);
-
+	mTexture->SetActive();
 	glDrawElements(
 		GL_TRIANGLES,
 		6,
@@ -44,14 +44,15 @@ void SpriteComponent::Draw(Shader* shader)
 		);
 }
 
-void SpriteComponent::SetTexture(SDL_Texture* texture)
+void SpriteComponent::SetTexture(Texture* texture)
 {
 	mTexture = texture;
 	// Set width/height
-	SDL_GetTextureSize(texture, &mTexWidth, &mTexHeight);
+	mTexWidth = texture->GetWidth();
+	mTexHeight = texture->GetHeight();
 }
 
-SDL_Texture * SpriteComponent::getTexture() {
+Texture * SpriteComponent::getTexture() {
 	return mTexture;
 }
 

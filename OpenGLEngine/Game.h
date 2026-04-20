@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Shader.h"
+#include "Texture.h"
 #include "VertexArray.h"
 
 class Game
@@ -29,7 +30,7 @@ public:
 	void AddSprite(class SpriteComponent* sprite);
 	void RemoveSprite(class SpriteComponent* sprite);
 	
-	SDL_Texture* GetTexture(const std::string& fileName);
+	Texture* GetTexture(const std::string& fileName);
 
 	// Game-specific (add/remove asteroid)
 	void AddAsteroid(class Asteroid* ast);
@@ -50,7 +51,7 @@ private:
 	void SetSpriteShaderActive();
 
 	// Map of textures loaded
-	std::unordered_map<std::string, SDL_Texture*> mTextures;
+	std::unordered_map<std::string, Texture*> mTextures;
 	// All the actors in the game
 	std::vector<class Actor*> mActors;
 	// Any pending actors
