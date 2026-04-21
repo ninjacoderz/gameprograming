@@ -15,6 +15,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "VertexArray.h"
+#include  "Ship.h"
 
 class Game
 {
@@ -38,6 +39,7 @@ public:
 	std::vector<class Asteroid*>& GetAsteroids() { return mAsteroids; }
 
 	bool LoadShaders();
+	Ship* GetShip() { return mShip; }
 private:
 	void ProcessInput();
 	void UpdateGame();

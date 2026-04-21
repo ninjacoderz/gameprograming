@@ -8,6 +8,8 @@
 
 #pragma once
 #include "Actor.h"
+#include "CircleComponent.h"
+
 class Laser : public Actor
 {
 public:
@@ -15,6 +17,7 @@ public:
 
 	void UpdateActor(float deltaTime) override;
 private:
-	class CircleComponent* mCircle;
+	CircleComponent* mCircle;
+
 	float mDeathTimer;
 };

@@ -59,13 +59,10 @@ bool Game::Initialize()
 	}
 
 	glGetError();
-	LoadData();
-
-	InitSpriteVerts();
 
 	LoadShaders();
-
-
+	InitSpriteVerts();
+	LoadData();
 
 	Random::Init();
 
